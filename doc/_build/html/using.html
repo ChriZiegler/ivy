@@ -161,14 +161,14 @@ later in the guide.</p>
 <span class="n">In</span> <span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="_images/primate_mpl.png" src="_images/primate_mpl.png" />
+<a class="reference internal image-reference" href="_images/primate_mpl.png"><img alt="_images/primate_mpl.png" src="_images/primate_mpl.png" style="width: 700px;" /></a>
 <p>You can also create a plot using <code class="docutils literal"><span class="pre">Bokeh</span></code>.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">ivy.vis.bokehtree</span>
 <span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="n">fig2</span> <span class="o">=</span> <span class="n">ivy</span><span class="o">.</span><span class="n">vis</span><span class="o">.</span><span class="n">bokehtree</span><span class="o">.</span><span class="n">BokehTree</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="n">In</span> <span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="n">fig2</span><span class="o">.</span><span class="n">drawtree</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="_images/primate_bokeh.png" src="_images/primate_bokeh.png" />
+<a class="reference internal image-reference" href="_images/primate_bokeh.png"><img alt="_images/primate_bokeh.png" src="_images/primate_bokeh.png" style="width: 700px;" /></a>
 </div>
 <div class="section" id="navigating">
 <h3>Navigating<a class="headerlink" href="#navigating" title="Permalink to this headline">¶</a></h3>
@@ -510,7 +510,7 @@ access the trees contained within the study.</p>
 <span class="n">In</span> <span class="p">[</span><span class="mi">80</span><span class="p">]:</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">treefig</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="_images/visualization_1.png" src="_images/visualization_1.png" />
+<a class="reference internal image-reference" href="_images/visualization_1.png"><img alt="_images/visualization_1.png" src="_images/visualization_1.png" style="width: 700px;" /></a>
 <p>A tree figure by default consists of the tree with clade and leaf
 labels and a navigation toolbar. The navigation toolbar allows zooming and
 panning. Panning can be done by clicking with the middle mouse button, using
@@ -522,7 +522,7 @@ with the <code class="docutils literal"><span class="pre">toggle_overview</span>
 <div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">81</span><span class="p">]:</span> <span class="n">fig</span><span class="o">.</span><span class="n">toggle_overview</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="_images/visualization_2.png" src="_images/visualization_2.png" />
+<a class="reference internal image-reference" href="_images/visualization_2.png"><img alt="_images/visualization_2.png" src="_images/visualization_2.png" style="width: 700px;" /></a>
 <p>You can retrieve information about a node or group of nodes by selecting
 them (selected nodes have green circles on them)
 and accessing the <code class="docutils literal"><span class="pre">selected</span></code> nodes</p>
@@ -533,20 +533,20 @@ and accessing the <code class="docutils literal"><span class="pre">selected</spa
  <span class="n">Node</span><span class="p">(</span><span class="mi">139976891981520</span><span class="p">,</span> <span class="n">leaf</span><span class="p">,</span> <span class="s">&#39;Pongo&#39;</span><span class="p">)]</span>
 </pre></div>
 </div>
-<img alt="_images/visualization_3.png" src="_images/visualization_3.png" />
+<a class="reference internal image-reference" href="_images/visualization_3.png"><img alt="_images/visualization_3.png" src="_images/visualization_3.png" style="width: 700px;" /></a>
 <p>You can also select nodes from the command line. Entering an internal node will
 select that node and all of its descendants.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">84</span><span class="p">]:</span> <span class="n">fig</span><span class="o">.</span><span class="n">select_nodes</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s">&quot;C&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<img alt="_images/visualization_4.png" src="_images/visualization_4.png" />
+<a class="reference internal image-reference" href="_images/visualization_4.png"><img alt="_images/visualization_4.png" src="_images/visualization_4.png" style="width: 700px;" /></a>
 <p>You can highlight certain branches using the <code class="docutils literal"><span class="pre">highlight</span></code> method. Again,
 entering an internal node will highlight that node and its descendants. This
 also highlights the branches on the overview.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">85</span><span class="p">]:</span> <span class="n">fig</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s">&quot;B&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<img alt="_images/visualization_5.png" src="_images/visualization_5.png" />
+<a class="reference internal image-reference" href="_images/visualization_5.png"><img alt="_images/visualization_5.png" src="_images/visualization_5.png" style="width: 700px;" /></a>
 <p>You can also decorate the tree with various symbols using the <code class="docutils literal"><span class="pre">decorate</span></code>
 method. <code class="docutils literal"><span class="pre">decorate</span></code> can be called with any function from <code class="docutils literal"><span class="pre">ivy.symbols</span></code>.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">86</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">ivy.vis.symbols</span>
@@ -555,7 +555,7 @@ method. <code class="docutils literal"><span class="pre">decorate</span></code> 
         <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;red&quot;</span><span class="p">,</span> <span class="s">&quot;orange&quot;</span><span class="p">,</span> <span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="s">&quot;green&quot;</span><span class="p">,</span> <span class="s">&quot;blue&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<img alt="_images/visualization_6.png" src="_images/visualization_6.png" />
+<a class="reference internal image-reference" href="_images/visualization_6.png"><img alt="_images/visualization_6.png" src="_images/visualization_6.png" style="width: 700px;" /></a>
 </div>
 <div class="section" id="performing-analyses">
 <h2>Performing analyses<a class="headerlink" href="#performing-analyses" title="Permalink to this headline">¶</a></h2>
@@ -623,18 +623,73 @@ branch lengths proportional to time).</p>
 <span class="n">In</span> <span class="p">[</span><span class="mi">104</span><span class="p">]:</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="_images/ltt.png" src="_images/ltt.png" />
+<a class="reference internal image-reference" href="_images/ltt.png"><img alt="_images/ltt.png" src="_images/ltt.png" style="width: 700px;" /></a>
 </div>
 <div class="section" id="phylorate-plot">
 <h3>Phylorate plot<a class="headerlink" href="#phylorate-plot" title="Permalink to this headline">¶</a></h3>
 <p>By accessing R libraries using <a class="reference external" href="http://rpy.sourceforge.net/">rpy2</a>, we can use
 the functions in the <a class="reference external" href="https://cran.r-project.org/web/packages/BAMMtools/index.html">BAMMtools</a>
 R library to generate phylorate plots.</p>
-<p>Using the whales dataset provided with BAMMtools:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">105</span><span class="p">]:</span> <span class="n">e</span> <span class="o">=</span> <span class="s">&quot;whaleEvents.csv&quot;</span> <span class="c"># Event data created with BAMM</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">106</span><span class="p">]:</span> <span class="n">treefile</span> <span class="o">=</span> <span class="s">&quot;whales.tre&quot;</span>
+<p>The following analysis is done using the whales dataset provided with BAMMtools.</p>
+<p>The first step is to read in the data and then import and use the necessary
+R functions to get the rate data for each branch.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">105</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">rpy2.robjects.packages</span> <span class="kn">import</span> <span class="n">importr</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">106</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">107</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">ivy.interactive</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">108</span><span class="p">]:</span> <span class="n">e</span> <span class="o">=</span> <span class="s">&quot;whaleEvents.csv&quot;</span> <span class="c"># Event data created with BAMM</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">109</span><span class="p">]:</span> <span class="n">treefile</span> <span class="o">=</span> <span class="s">&quot;whales.tre&quot;</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">110</span><span class="p">]:</span> <span class="n">ape</span> <span class="o">=</span> <span class="n">importr</span><span class="p">(</span><span class="s">&#39;ape&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">111</span><span class="p">]:</span> <span class="n">bamm</span> <span class="o">=</span> <span class="n">importr</span><span class="p">(</span><span class="s">&#39;BAMMtools&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">112</span><span class="p">]:</span> <span class="n">rutils</span> <span class="o">=</span> <span class="n">importr</span><span class="p">(</span><span class="s">&#39;utils&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">113</span><span class="p">]:</span> <span class="n">events</span> <span class="o">=</span> <span class="n">rutils</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">114</span><span class="p">]:</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">ape</span><span class="o">.</span><span class="n">read_tree</span><span class="p">(</span><span class="n">treefile</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">115</span><span class="p">]:</span> <span class="n">edata</span> <span class="o">=</span> <span class="n">bamm</span><span class="o">.</span><span class="n">getEventData</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">eventdata</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">burnin</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">116</span><span class="p">]:</span> <span class="n">dtrates</span> <span class="o">=</span> <span class="n">bamm</span><span class="o">.</span><span class="n">dtRates</span><span class="p">(</span><span class="n">edata</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">tmat</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">rx2</span><span class="p">(</span><span class="s">&#39;dtrates&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">117</span><span class="p">]:</span> <span class="n">nodeidx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtrates</span><span class="o">.</span><span class="n">rx2</span><span class="p">(</span><span class="s">&#39;tmat&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">118</span><span class="p">]:</span> <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtrates</span><span class="o">.</span><span class="n">rx2</span><span class="p">(</span><span class="s">&#39;rates&#39;</span><span class="p">))</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">119</span><span class="p">]:</span> <span class="n">netdiv</span> <span class="o">=</span> <span class="n">rates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">rates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
+<p>Now we are done using R functions. The rest can be done in Python.</p>
+<p>The next step is to read in the tree with <code class="docutils literal"><span class="pre">ivy</span></code> and then assign the Ape
+node indicies. Ape numbers nodes as following: for a tree with n leaves, the
+leaves and numbered 1:n in the order they appear in their file. The internal
+nodes are ordered in preorder sequence, starting with the root node as
+node n+1.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">120</span><span class="p">]:</span> <span class="n">r</span> <span class="o">=</span> <span class="n">ivy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">treefile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">121</span><span class="p">]:</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">122</span><span class="p">]:</span> <span class="k">for</span> <span class="n">lf</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
+        <span class="n">lf</span><span class="o">.</span><span class="n">apeidx</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">123</span><span class="p">]:</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">clades</span><span class="p">():</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">apeidx</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">124</span><span class="p">]:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">treefig</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can generate the plot by drawing individual segments of each branch,
+color-coded by rate along the branch.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">125</span><span class="p">]:</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">descendants</span><span class="p">():</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">rates</span> <span class="o">=</span> <span class="n">netdiv</span><span class="p">[</span><span class="n">nodeidx</span><span class="o">==</span><span class="n">n</span><span class="o">.</span><span class="n">apeidx</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">n2c</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">n2c</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">parent</span><span class="p">]</span>
+        <span class="n">seglen</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">pc</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">rates</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rate</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">rates</span><span class="p">):</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">seglen</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">x0</span><span class="o">+</span><span class="n">seglen</span>
+            <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">x0</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">y</span><span class="p">)))</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
+        <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">pc</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pc</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">y</span><span class="p">)))</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">rates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">126</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">matplotlib.cm</span> <span class="kn">import</span> <span class="n">coolwarm</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">127</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">128</span><span class="p">]:</span> <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">segments</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">coolwarm</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">129</span><span class="p">]:</span> <span class="n">lc</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">130</span><span class="p">]:</span> <span class="n">f</span><span class="o">.</span><span class="n">detail</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">131</span><span class="p">]:</span> <span class="n">f</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/phylorate_plot.png"><img alt="_images/phylorate_plot.png" src="_images/phylorate_plot.png" style="width: 700px;" /></a>
 </div>
 </div>
 </div>

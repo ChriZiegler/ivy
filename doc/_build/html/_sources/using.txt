@@ -144,6 +144,7 @@ later in the guide.
     In [*]: fig.show()
 
 .. image:: _images/primate_mpl.png
+    :width: 700
 
 
 You can also create a plot using ``Bokeh``.
@@ -155,8 +156,8 @@ You can also create a plot using ``Bokeh``.
     In [*]: fig2.drawtree()
 
 .. image:: _images/primate_bokeh.png
+    :width: 700
 
-.. TODO: embed plot images
 
 Navigating
 ----------
@@ -567,6 +568,7 @@ Displaying a tree is very simple
     In [*]: fig = treefig(r)
 
 .. image:: _images/visualization_1.png
+    :width: 700
 
 A tree figure by default consists of the tree with clade and leaf
 labels and a navigation toolbar. The navigation toolbar allows zooming and
@@ -583,6 +585,7 @@ with the ``toggle_overview`` method.
     In [*]: fig.toggle_overview()
 
 .. image:: _images/visualization_2.png
+    :width: 700
 
 You can retrieve information about a node or group of nodes by selecting
 them (selected nodes have green circles on them) 
@@ -597,6 +600,7 @@ and accessing the ``selected`` nodes
      Node(139976891981520, leaf, 'Pongo')]
 
 .. image:: _images/visualization_3.png
+    :width: 700
 
 
 You can also select nodes from the command line. Entering an internal node will
@@ -607,6 +611,7 @@ select that node and all of its descendants.
     In [*]: fig.select_nodes(r["C"])
 
 .. image:: _images/visualization_4.png
+    :width: 700
 
 You can highlight certain branches using the ``highlight`` method. Again, 
 entering an internal node will highlight that node and its descendants. This
@@ -617,6 +622,7 @@ also highlights the branches on the overview.
     In [*]: fig.highlight(r["B"])
 
 .. image:: _images/visualization_5.png
+    :width: 700
 
 You can also decorate the tree with various symbols using the ``decorate``
 method. ``decorate`` can be called with any function from ``ivy.symbols``.
@@ -629,7 +635,7 @@ method. ``decorate`` can be called with any function from ``ivy.symbols``.
             colors = ["red", "orange", "yellow", "green", "blue"])
 
 .. image:: _images/visualization_6.png
-
+    :width: 700
 
 Performing analyses
 ===================
@@ -712,6 +718,7 @@ You can plot your results using ``Matplotlib``.
     In [*]: plt.show()
 
 .. image:: _images/ltt.png
+    :width: 700
 
 
 Phylorate plot
@@ -721,20 +728,76 @@ By accessing R libraries using `rpy2 <http://rpy.sourceforge.net/>`_, we can use
 the functions in the `BAMMtools <https://cran.r-project.org/web/packages/BAMMtools/index.html>`_
 R library to generate phylorate plots.
 
-Using the whales dataset provided with BAMMtools:
+The following analysis is done using the whales dataset provided with BAMMtools.
+
+The first step is to read in the data and then import and use the necessary
+R functions to get the rate data for each branch.
 
 .. sourcecode:: ipython
 
+    In [*]: from rpy2.robjects.packages import importr
+    In [*]: import numpy as np
+    In [*]: from ivy.interactive import *
     In [*]: e = "whaleEvents.csv" # Event data created with BAMM
     In [*]: treefile = "whales.tre"
+    In [*]: ape = importr('ape')
+    In [*]: bamm = importr('BAMMtools')
+    In [*]: rutils = importr('utils')
+    In [*]: events = rutils.read_csv(e)
+    In [*]: tree = ape.read_tree(treefile)
+    In [*]: edata = bamm.getEventData(tree, eventdata=e, burnin=0.2)
+    In [*]: dtrates = bamm.dtRates(edata, 0.01, tmat=True).rx2('dtrates')
+    In [*]: nodeidx = np.array(dtrates.rx2('tmat').rx(True, 1), dtype=int)
+    In [*]: rates = np.array(dtrates.rx2('rates'))
+    In [*]: netdiv = rates[0]-rates[1]
+
+Now we are done using R functions. The rest can be done in Python.
+
+The next step is to read in the tree with ``ivy`` and then assign the Ape
+node indicies. Ape numbers nodes as following: for a tree with n leaves, the
+leaves and numbered 1:n in the order they appear in their file. The internal
+nodes are ordered in preorder sequence, starting with the root node as
+node n+1.
+
+.. sourcecode:: ipython
+
+    In [*]: r = ivy.tree.read(treefile, type="newick")
+    In [*]: i = 1
+    In [*]: for lf in r.leaves():
+            lf.apeidx = i
+            i += 1
+    In [*]: for n in r.clades():
+            n.apeidx = i
+            i += 1
+    In [*]: f = treefig(r)
+
+Now we can generate the plot by drawing individual segments of each branch, 
+color-coded by rate along the branch.
 
 
+.. sourcecode:: ipython
 
+    In [*]: for n in r.descendants():
+            n.rates = netdiv[nodeidx==n.apeidx]
+            c = f.detail.n2c[n]
+            pc = f.detail.n2c[n.parent]
+            seglen = (c.x-pc.x)/len(n.rates)
+            for i, rate in enumerate(n.rates):
+                x0 = pc.x+i*seglen
+                x1 = x0+seglen
+                segments.append(((x0, c.y), (x1, c.y)))
+                values.append(rate)
+            segments.append(((pc.x, pc.y), (pc.x, c.y)))
+            values.append(n.rates[0])
+    In [*]: from matplotlib.cm import coolwarm
+    In [*]: from matplotlib.collections import LineCollection
+    In [*]: lc = LineCollection(segments, cmap=coolwarm, lw=2)
+    In [*]: lc.set_array(np.array(values))
+    In [*]: f.detail.add_collection(lc)
+    In [*]: f.figure.canvas.draw_idle()
 
-
-
-
-
+.. image:: _images/phylorate_plot.png
+    :width: 700
 
 
 
