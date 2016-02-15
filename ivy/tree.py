@@ -11,6 +11,9 @@ from copy import copy as _copy
 from matrix import vcv
 import newick
 from itertools import izip_longest
+import csv
+import numpy as np
+import itertools
 
 ## class Tree(object):
 ##     """
@@ -80,6 +83,7 @@ class Node(object):
         self.comment = ""
         self.length_comment = ""
         self.label_comment = ""
+        self.apeidx = None
         if kwargs:
             for k, v in kwargs.items():
                 setattr(self, k, v)
@@ -164,6 +168,60 @@ class Node(object):
                 return n
         raise IndexError(str(x))
 
+    def reindex(self):
+        """
+        Can only assign ni, li, and ii
+        """
+        assert self.isroot, "Only the root can be reindexed"
+
+        ni = 0
+        li = 0
+        ii = 0
+
+        for n in self:
+            n.ni = ni
+            ni += 1
+            if n.isleaf:
+                try: # Delete leftover properties that no longer apply
+                    del(n.ii)
+                except:
+                    pass
+                n.li = li
+                li += 1
+            else:
+                try:
+                    del(n.li)
+                except:
+                    pass
+                n.ii = ii
+                ii += 1
+    #
+    #     newtree = read(newickstr)
+    #
+    #     vars_to_index = ["pi", "ni", "ii", "li", "back", "next",
+    #                      "right", "left"]
+    #
+    #     for i,n in enumerate(self):
+    #         for var in vars(n):
+    #             if var in vars_to_index:
+    #                 print var
+    #                 n.var = newtree[i].var
+
+    def ape_node_idx(self): # For use in phylorate plot
+        i = 1
+        for lf in self.leaves():
+            lf.apeidx = i
+            i += 1
+        for n in self.clades():
+            n.apeidx = i
+            i += 1
+
+    def get_root(self):
+        if not self.isroot:
+            return self.parent.get_root()
+        else:
+            return self
+
     def ascii(self, *args, **kwargs):
         """
         Create ascii tree.
@@ -201,14 +259,40 @@ class Node(object):
             if add and (c.length is not None):
                 c.length += self.length
         self.children = []
+        p.get_root().reindex()
         return p
 
-    def copy(self, recurse=False):
+#    def copy_old(self, recurse=False):
+#        """
+#        Return a shallow copy of the node, but not copies of children, parent,
+#        or any attribute that is a Node.
+#
+#        If `recurse` is True, recursively copy child nodes.
+#
+#        Args:
+#            recurse (bool): Whether or not to copy children as well as self.
+#
+#        Returns:
+#            Node: A copy of self.
+#
+#
+#
+#        RR: This function runs rather slowly -CZ
+#        """
+#        newnode = Node()
+#        for attr, value in self.__dict__.items():
+#            if (attr not in ("children", "parent") and
+#                not isinstance(value, Node)):
+#                setattr(newnode, attr, _copy(value))
+#            if recurse:
+#                newnode.children = [
+#                    child.copy(True) for child in self.children
+#                    ]
+#        return newnode
+    def copy(self, recurse=True, _par=None):
         """
-        Return a copy of the node, but not copies of children, parent,
-        or any attribute that is a Node.
-
-        If `recurse` is True, recursively copy child nodes.
+        Return a shallow copy of self. If recurse = False, do not copy children,
+        parents, or any attribute that is Node.
 
         Args:
             recurse (bool): Whether or not to copy children as well as self.
@@ -216,20 +300,21 @@ class Node(object):
         Returns:
             Node: A copy of self.
 
-        TODO: test this function.
-
-        RR: This function runs rather slowly -CZ
         """
         newnode = Node()
         for attr, value in self.__dict__.items():
             if (attr not in ("children", "parent") and
                 not isinstance(value, Node)):
                 setattr(newnode, attr, _copy(value))
-            if recurse:
-                newnode.children = [
-                    child.copy(True) for child in self.children
-                    ]
+        if recurse:
+            newnode.children = [
+                child.copy(True, _par = newnode) for child in self.children
+                ]
+            if _par:
+                newnode.parent = _par
         return newnode
+
+
 
     def leafsets(self, d=None, labels=False):
         """return a mapping of nodes to leaf sets (nodes or labels)"""
@@ -308,16 +393,20 @@ class Node(object):
         Test if leaf descendants are monophyletic
 
         Args:
-            *leaves (Node): At least two leaf Node objects
+            *leaves (Node): At least two leaf Node objects or labels
 
         Returns:
             bool: Are the leaf descendants monophyletic?
 
-        RR: Should this function have a check to make sure the input nodes are
-        leaves? There is some strange behavior if you input internal nodes -CZ
         """
+
         if len(leaves) == 1:
-            leaves = list(leaves)[0]
+            # The only valid input of length 1 is a list of leaves.
+            assert type(leaves[0]) == list, "Need more than one leaf for ismono(), got %s" % leaves
+
+            leaves = leaves[0]
+        assert all([ self[n].isleaf for n in leaves ]), "All given nodes must be leaves"
+
         assert len(leaves) > 1, (
             "Need more than one leaf for ismono(), got %s" % leaves
             )
@@ -344,6 +433,7 @@ class Node(object):
 
     def ladderize(self, reverse=False):
         self.order_subtrees_by_size(recurse=True, reverse=reverse)
+        self.reindex()
         return self
 
     def add_child(self, child):
@@ -360,20 +450,27 @@ class Node(object):
         child.isroot = False
         self.nchildren += 1
 
-    def bisect_branch(self):
+    def bisect_branch(self, distance = 0.5):
         """
         Add new node as parent to self in the middle of branch to parent.
+
+        Args:
+            distance (float): What percentage along branch to place
+              new node. Defaults to 0.5 (bisection). Higher numbers
+              set the new node closer to the parent, lower
+              numbers set it closer to child.
 
         Returns:
             Node: A new node.
 
         """
         assert self.parent
+        assert 0 < distance < 1
         parent = self.prune()
         n = Node()
         if self.length:
-            n.length = self.length/2.0
-            self.length /= 2.0
+            n.length = self.length * (1-distance)
+            self.length *= distance
         parent.add_child(n)
         n.add_child(self)
         return n
@@ -386,7 +483,7 @@ class Node(object):
             child (Node): A node object that is a child of self
 
         """
-        assert child in self.children
+        assert child in self.children, "node '%s' not child of node '%s'" % (child.label or child.id, self.label or self.id)
         self.children.remove(child)
         child.parent = None
         self.nchildren -= 1
@@ -407,8 +504,8 @@ class Node(object):
         Return a list of leaves. Can be filtered with f.
 
         Args:
-            f (function): A function that evaluates to True if called with desired
-              node as the first input
+            f (function): A function that evaluates to True if called with
+              desired node as the first input
 
         Returns:
             list: A list of leaves that are true for f (if f is given)
@@ -422,8 +519,8 @@ class Node(object):
         Return a list nodes that have children (internal nodes)
 
         Args:
-            f (function): A function that evaluates to true if called with desired
-              node as the first input
+            f (function): A function that evaluates to true if called with
+              desired node as the first input
 
         Returns:
             list: A list of internal nodes that are true for f (if f is given)
@@ -448,7 +545,7 @@ class Node(object):
 
         Args:
             f (function): A function that evaluates to true if called with
-            desired node as the first input
+            desired node as the first input. Optional
 
         Yields:
             Node: Nodes descended from self (including self) in
@@ -511,6 +608,69 @@ class Node(object):
             if child.children:
                 child.descendants(order, v, f)
         return v
+    def drop_tip(self, nodes):
+        """
+        Return a NEW TREE with the given tips dropped from it. Does not
+        affect old tree.
+
+        Args:
+            nodes (list): Leaf nodes or labels of leaf nodes
+        Returns:
+            Node (Node): New root node with tips dropped
+        """
+        t = self.copy()
+        nodes = [ t[self[x].id] for x in nodes ]
+        nodes = sorted(nodes, key=lambda x: x.ni)
+        assert all([ x.isleaf for x in nodes ]), "All nodes given must be tips"
+        root = t
+
+
+        for node in nodes:
+            cp = node.parent
+            cp.remove_child(node)
+            if cp.length:
+                node.length += cp.length
+            if len(cp.children) == 1:
+                try:
+                    cp.excise()
+                except AssertionError:
+                    t.isroot = False
+                    root = cp.children[0]
+                    root.parent = None
+            elif len(cp.children) == 0:
+                cpp = cp.parent
+                cp.parent.remove_child(cp)
+                if cpp.nchildren == 1:
+                    try:
+                        cpp.excise()
+                    except AssertionError:
+                        t.isroot = False
+                        root = cpp.children[0]
+                        root.parent = None
+                        root.isroot = True
+        for n in root.descendants():
+            # This removes all knees in the tree. It mimics what ape's
+            # drop.tip function does. Unsure what the behavior
+            # should actually be.
+            if n.nchildren == 1:
+                n.excise()
+        root.isroot = True
+        root.reindex()
+        return root
+    def keep_tip(self, nodes):
+        """
+        Return a NEW TREE containing only the given tips.
+
+        Args:
+            nodes (list): Leaf nodes or labels of leaf notes
+        Returns:
+            Node (Node): New root node containing only given tips
+        """
+        nodes = [ self[x] for x in nodes ]
+        assert all([ x.isleaf for x in nodes ]), "All nodes given must be tips"
+        to_drop = [ l for l in self.leaves() if not l in nodes ]
+
+        return self.drop_tip(to_drop)
 
     def get(self, f, *args, **kwargs):
         """
@@ -519,6 +679,7 @@ class Node(object):
         Args:
             f (function): A function that evaluates to True if desired
               node is called as the first parameter.
+            *args, **kwargs: Additional args called by f
         Returns:
             Node: The first node found by node.find()
 
@@ -607,9 +768,111 @@ class Node(object):
         """Return a list of found nodes."""
         return list(self.find(f, *args, **kwargs))
 
+    # def is_same_tree(self, tree, check_id=False, verbose=False):
+    #     """
+    #     Test if two trees are the same (same topology, characteristics, labels,
+    #     etc.) Ignores IDs by default.
+    #
+    #     Args:
+    #         tree (Node): Another tree to compare to
+    #         check_id (bool): Whether or not to compare IDs. Defaults to False
+    #         verbose (bool): Whether or not to print a message containing
+    #           the non-matching properties
+    #     Returns:
+    #         bool: Whether or not the trees are the same.
+    #     """
+    #     assert self.isroot and tree.isroot, "Must compare root nodes"
+    #     # Recursively check properties of both trees EXCEPT for IDs and children/parents
+    #     # (IDs are ignored by default and children/parents will be checked
+    #     # during the enumeration of all nodes)
+    #     a_tree = self.copy()
+    #     b_tree = tree.copy()
+    #
+    #     # a_tree.ladderize()
+    #     # b_tree.ladderize()
+    #
+    #     ignoreProps = ["children", "parent", "left", "right", "back","pi","next","treename"]
+    #     if not check_id:
+    #         ignoreProps.append("id")
+    #
+    #     for i,node in enumerate(a_tree):
+    #         for property, value in vars(node).iteritems():
+    #             if property in ignoreProps:
+    #                 pass
+    #             else:
+    #                 if (type(vars(a_tree[i])[property]) != float) or (type(vars(b_tree[i])[property]) != float):
+    #                     try: #Trycatch in case property does not exist in both trees
+    #                         if vars(a_tree[i])[property] != vars(b_tree[i])[property]:
+    #                             if verbose:
+    #                                 print (str(["Nonmatching properties:",
+    #                                     property, str(vars(a_tree[i])[property]),
+    #                                     str(vars(b_tree[i])[property]), a_tree[i], b_tree[i]]))
+    #                             return False
+    #                     except KeyError:
+    #                         if verbose:
+    #                             print "Missing Property", str(property)
+    #                         return False
+    #                 else: # Want to test if floats are close, not identical
+    #                     if not np.isclose(vars(a_tree[i])[property], vars(b_tree[i])[property]):
+    #                         if verbose:
+    #                             print (str(["Nonmatching properties:",
+    #                                 property, str(vars(a_tree[i])[property]),
+    #                                 str(vars(b_tree[i])[property])]))
+    #                         return False
+    #     return True
+    def is_same_tree(self, tree):
+        """
+        Test if two trees are the same (same topology, characteristics, labels,
+        etc.) Ignores IDs by default.
+
+        Args:
+            tree (Node): Another tree to compare to
+            verbose (bool): Whether or not to print a message containing
+              the non-matching properties
+        Returns:
+            bool: Whether or not the trees are the same.
+        """
+        assert self.isroot and tree.isroot, "Must compare root nodes"
+        # Recursively check properties of both trees EXCEPT for IDs and children/parents
+        # (IDs are ignored by default and children/parents will be checked
+        # during the enumeration of all nodes)
+        a_tree = self.copy()
+        b_tree = tree.copy()
+
+        return a_tree._is_isomorphic(b_tree)
+
+    def _is_isomorphic(self, node):
+        """
+        Two nodes are isomorphic if all of their properties are identical;
+        Two leaves with identical properties are isomorphic
+        Two internals are identical if either their child nodes are identical
+        in any order.
+
+        """
+        propsToCheck = ["age", "apeidx", "isleaf", "isroot",
+                        "label", "length", "support", "nchildren"]
+
+        for prop in propsToCheck:
+            if (type(getattr(self, prop))) == float and (type(getattr(node, prop)) == float ):
+                if not np.isclose(getattr(self, prop), getattr(node, prop)):
+                    return False
+            else:
+                if getattr(self, prop) != getattr(node, prop):
+                    return False
+        if self.nchildren == 0 and node.nchildren == 0:
+            return True
+        else:
+            for s in itertools.permutations(self.children):
+                if all([ n._is_isomorphic(node.children[i]) for i,n in enumerate(s) ]):
+                    return True
+
+        return False
+
     def prune(self):
         """
         Remove self if self is not root.
+
+        All descendants of self are also removed
 
         Returns:
             Node: Parent of self. If parent had only two children,
@@ -695,8 +958,8 @@ class Node(object):
         Args:
             end (Node): A Node object to iterate to (instead of iterating
               towards root). Optional, defaults to None
-            stop (function): A function that returns True if desired node is called
-              as the first parameter. Optional, defaults to None
+            stop (function): A function that returns True if desired node is
+              called as the first parameter. Optional, defaults to None
 
         Yields:
             Node: Nodes in path to root (or end).
@@ -835,7 +1098,7 @@ class Node(object):
             cp.length = node.length
         return newroot
 
-    def reroot(self, newroot):
+    def reroot_org2(self, newroot):
         """
         RR: I can't get this to work properly -CZ
         """
@@ -855,6 +1118,54 @@ class Node(object):
         newroot.isroot = True
         return newroot
 
+    def reroot(self, newroot, distance = 0.5):
+        """
+        Reroot the tree between newroot and its parent.
+        By default, the new node is halfway in between
+        newroot and its current parent. Works by unrooting the tree, then
+        rerooting it at the new node.
+
+        Returns a NEW tree. Does not affect old tree
+
+        Args:
+            newroot: Node or str of node label. Cannot be child of
+              current root.
+            distance (float): What percentage along branch to place
+              new node. Defaults to 0.5 (bisection). Higher numbers
+              set the new node closer to the parent, lower
+              numbers set it closer to child.
+        Returns:
+            Node: Root node of new rerooted tree.
+        """
+        oldroot = self.copy()
+        oldroot.isroot = False
+        newroot = oldroot[newroot]
+        assert newroot in oldroot
+        assert newroot not in oldroot.children
+        t = newroot.bisect_branch(distance)
+
+        v = list(t.rootpath())
+        t.parent = None
+        t.children.append(v[0])
+
+        newparent = t
+        newlen = t.length
+        for node in v:
+            node.children = [ x for x in node.children if x is not newparent ]
+            node.children.append(node.parent)
+            node.parent = newparent
+            oldlen = node.length
+            node.length = newlen
+            newlen = oldlen
+            newparent = node
+        v[-1].children = [ x for x in v[-1].children if x ]
+        try:
+            v[-1].excise()
+        except:
+            pass
+
+        t.isroot = True
+        return t
     def makeroot(self, shift_labels=False):
         """
         shift_labels: flag to shift internal parent-child node labels
@@ -881,11 +1192,28 @@ class Node(object):
             s = write_newick(self, outfile, length_fmt, True, clobber)
             if not outfile:
                 return s
+    # def update_pi(self, count=0):
+    #     """
+    #     Given root node, traverse tree in postorder sequence and update
+    #     pi property of nodes
+    #     """
+    #     assert self.isroot
+    #     count = 0
+    #     tree.leaves()[0].pi = count
+    def get_siblings(self):
+        """
+        Return list of siblings of node
+        """
+        assert self.parent is not None
+        return [c for c in self.parent.children if not c==self]
+           
+
+
 
 
 reroot = Node.reroot
 
-def index(node, n=0, d=0):
+def index(node, n=0, d=0, ni=0, li=0, ii=0,pi=0):
     """
     recursively attach 'next', 'back', (and 'left', 'right'), 'ni',
     'ii', 'pi', and 'node_depth' attributes to nodes
@@ -896,6 +1224,8 @@ def index(node, n=0, d=0):
     else:
         node.node_depth = node.parent.node_depth + 1
     n += 1
+    # node.ni = ni; ni+=1
+    # node.ii = ii; ii +=1
     for i, c in enumerate(node.children):
         if i > 0:
             n = node.children[i-1].back + 1
@@ -905,7 +1235,7 @@ def index(node, n=0, d=0):
         node.back = node.right = node.children[-1].back + 1
     else:
         node.back = node.right = n
-    return node.back
+#    return node.back
 
 def remove_singletons(root, add=True):
     "Remove descendant nodes that are the sole child of their parent"
@@ -1127,3 +1457,22 @@ def C(leaves, internals):
             m[n.ii,lf.li] = v
             v += n.length if n.length is not None else 1
     return m.tocsc()
+
+def load_chars(filename, colNames=True, rowNames=False):
+    """
+    Given a filename pointing to a CSV with species names as column one
+    and characters as remaining columns, return a dictionary mapping
+    names to characters
+    """
+    chars = {}
+    with open(filename, "r") as f:
+        read = csv.reader(f, delimiter=",", quotechar='"')
+        for i,row in enumerate(read):
+            if colNames and i==0:
+                charNames = row[1:]
+            elif i==0:
+                charNames = [ "c"+i for i in range(len(row[1:])) ]
+                chars[row[0]] = { char:row[j+1] for j, char in enumerate(charNames) }
+            else:
+                chars[row[0]] = { char:row[j+1] for j, char in enumerate(charNames) }
+    return chars

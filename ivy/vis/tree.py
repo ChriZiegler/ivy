@@ -8,7 +8,7 @@ from pprint import pprint
 from .. import tree, bipart
 from ..layout import cartesian
 from ..storage import Storage
-from .. import pyperclip as clipboard
+from ivy import pyperclip as clipboard
 #from ..nodecache import NodeCache
 import matplotlib, numpy
 import matplotlib.pyplot as pyplot
@@ -78,6 +78,7 @@ class TreeFigure(object):
     * fig.toggle_leaflabels() - ditto for leaf labels
     * fig.decorate(func) - decorate the tree with a function (see
       :ref:`decorating TreeFigures <decorating-trees>`)
+
     """
     def __init__(self, data, name=None, scaled=True, div=0.25,
                  branchlabels=True, leaflabels=True, mark_named=True,
@@ -1191,6 +1192,9 @@ class Tree(Axes):
         ##                                                yoff=yoff)))
         self.figure.canvas.draw_idle()
         return lc
+        
+        
+    
 
     def hardcopy(self, relwidth=0.5, leafpad=1.5):
         p = HC.TreeFigure(self.root, relwidth=relwidth, leafpad=leafpad,

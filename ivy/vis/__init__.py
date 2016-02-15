@@ -1,4 +1,4 @@
-from . import tree, alignment, colors, symbols, hardcopy
-TreeFigure = tree.TreeFigure
-MultiTreeFigure = tree.MultiTreeFigure
+from . import treevis, alignment, colors, symbols, hardcopy
+TreeFigure = treevis.TreeFigure
+MultiTreeFigure = treevis.MultiTreeFigure
 AlignmentFigure = alignment.AlignmentFigure

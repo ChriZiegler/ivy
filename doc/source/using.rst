@@ -68,18 +68,18 @@ the help for *fig*::
 Trees in Ivy
 =============
 
-Ivy does not have a tree class per se; rather trees in Ivy exist as collections
-of nodes. In Ivy, a Node is a class that contains information about a node.
-Nodes are rooted and recursively contain their children. Functions
-in Ivy act directly on Node objects. Nodes support Python idioms such as ``in``,
+``ivy`` does not have a tree class per se; rather trees in ``ivy`` exist as collections
+of nodes. In ``ivy``, a ``Node`` is a class that contains information about a node.
+``Nodes`` are rooted and recursively contain their children. Functions
+in ``ivy`` act directly on ``Node`` objects. Nodes support Python idioms such as ``in``,
 ``[``, iteration, etc. This guide will cover how to read, view, navigate, modify,
-and write trees in Ivy.
+and write trees in ``ivy``.
 
 Reading
 -------
 
-You can read in trees using Ivy's ``tree.read`` function. This function supports
-newick and nexus files. The tree.read function can take a file name, a file
+You can read in trees using ``ivy``'s ``tree.read`` function. This function supports
+newick and nexus files. The ``tree.read`` function can take a file name, a file
 object, or a Newick string as input. The output of this function is the root
 node of the tree.
 
@@ -95,29 +95,19 @@ node of the tree.
                 "B:0.13,Ateles:0.62)C:0.38,Galago:1.00)root;")
     In [*]: # These three methods are identical
 
-You can copy a read tree using the ``copy`` method on the root node. Node
+You can copy a read tree using the ``copy_new`` method on the root node. ``Node``
 objects are mutable, so this method is preferred over ``r2 = r`` if you want
 to create a deep copy.
 
 .. sourcecode:: ipython
 
-    In [*]: r2 = r.copy(recurse=True) # If recurse=False, won't copy children etc.
-
-.. warning::
-
-    As of now, the copy function does not produce a complete tree: the nodes are not
-    properly connected to each other
-
-.. sourcecode:: ipython
-
-    In [*]: print r2["A"].parent
-    None
+    In [*]: r2 = r.copy_new(recurse=True) # If recurse=False, won't copy children.
 
 Viewing
 -------
 
-There are a number of ways you can view trees in Ivy. For a simple display
-without needing to create a plot, Ivy can create ascii trees that can be
+There are a number of ways you can view trees in ``ivy``. For a simple display
+without needing to create a plot, ``ivy`` can create ascii trees that can be
 printed to the console.
 
 .. sourcecode:: ipython
@@ -133,17 +123,18 @@ printed to the console.
         :
         ------------------------------------+ Galago
 
-For a more detailed and interactive tree, Ivy can create a plot using
-``Matplotlib``. More detail about visualization using Matplotlib will follow
-later in the guide.
+For a more detailed and interactive tree, ``ivy`` can create a plot using
+``matplotlib``. More detail about visualization using ``matplotlib`` are in the
+"Visualization with matplotlib" section.
 
 .. sourcecode:: ipython
 
     In [*]: import ivy.vis
-    In [*]: fig = ivy.vis.tree.TreeFigure(r)
+    In [*]: fig = ivy.vis.treevis.TreeFigure(r)
     In [*]: fig.show()
 
 .. image:: _images/primate_mpl.png
+    :width: 700
 
 
 You can also create a plot using ``Bokeh``.
@@ -155,19 +146,20 @@ You can also create a plot using ``Bokeh``.
     In [*]: fig2.drawtree()
 
 .. image:: _images/primate_bokeh.png
+    :width: 700
 
-.. TODO: embed plot images
 
 Navigating
 ----------
 
-A node in Ivy is a container. It recursively contains its descendants,
+A node in ``ivy`` is a container. It recursively contains its descendants,
 as well as itself. You can navigate a tree using the Python idioms that
-you are used to.
+you are used to using.
 
 Let's start by iterating over all of the children contained within the root
 node. By default, iteration over a node happens in preorder sequence, starting
-with the root node.
+with the root node. To iterate over a node in a specific sequence, you can use
+the ``preorder`` and ``postorder`` methods.
 
 .. sourcecode:: ipython
 
@@ -184,7 +176,7 @@ with the root node.
     Node(139624003155920, leaf, 'Macaca')
     Node(139624003155984, leaf, 'Ateles')
     Node(139624003156048, leaf, 'Galago')
-    In [*]: for node in r.preiter:
+    In [*]: for node in r.preiter():
                 print node # Same as above
     Node(140144824314320, root, 'root')
     Node(140144824314384, 'C')
@@ -195,7 +187,7 @@ with the root node.
     Node(140144824314256, leaf, 'Macaca')
     Node(140144824314640, leaf, 'Ateles')
     Node(140144824314704, leaf, 'Galago')
-    In [*]: for node in r.postiter:
+    In [*]: for node in r.postiter():
                 print node # Nodes in postorder sequence.
     Node(140144824314576, leaf, 'Homo')
     Node(140144824314192, leaf, 'Pongo')
@@ -239,8 +231,8 @@ the node itself)
      Node(139624003155856, leaf, 'Pongo'),
      Node(139624003155920, leaf, 'Macaca')]
 
-We can search nodes using regular expressions with the Node grep method.
-We can also grep leaf nodes and internal nodes specifically.
+We can search nodes using regular expressions with the ``Node`` ``grep`` method.
+We can also ``grep`` leaf nodes and internal nodes specifically.
 
 .. sourcecode:: ipython
 
@@ -283,7 +275,7 @@ first argument and returns a ``bool``.
 Testing
 -------
 
-We can test many attributes of a node in Ivy.
+We can test many attributes of a node in ``ivy``.
 
 We can test whether a node contains another node
 
@@ -323,20 +315,16 @@ We can test if a group of leaves is monophyletic
     In [*]: r.ismono(r["Homo"], r["Pongo"], r["Galago"])
     Out[*]: False
 
-.. warning::
-    `ismono` does not return an error if an internal node is given to it,
-    but it does produce undesired results.
-
 Modifying
 ---------
 
-The Ivy Node object has many methods for modifying a tree in place.
+The ``ivy`` ``Node`` object has many methods for modifying a tree in place.
 
 
 Removing
 ~~~~~~~~
 
-There are two main ways to remove nodes in Ivy; collapsing and pruning.
+There are two main ways to remove nodes in ``ivy``; collapsing and pruning.
 
 Collapsing removes a node and attaches its descendants to the node's parent.
 
@@ -367,7 +355,7 @@ Pruning removes a node and its descendants
 
 You can see that the tree now has a 'knee': clade C only has one child and
 does not need to exist on the tree. We can remove it with another method of
-removing nodes: excising. Excising removes a node from between its parent
+removing nodes: ``excise``. Excising removes a node from between its parent
 and its single child.
 
 .. sourcecode:: ipython
@@ -402,7 +390,8 @@ Adding
 ~~~~~~
 
 Our tree is looking a little sparse, so let's add some nodes back in. There
-are a few methods of adding nodes in Ivy. We will go over ``biscect``, ``add_child``, and ``graft``
+are a few methods of adding nodes in ``ivy``. We will go over ``biscect``,
+``add_child``, and ``graft``
 
 Bisecting creates a 'knee' node halfway between a parent and a child.
 
@@ -426,7 +415,8 @@ it using its ID instead (if you're following along, your ID will be different).
 
     In [*]: r[140144821654480].label = "N"
 
-Now let's add a node as a child of N. We can do this using the ``add_child`` method.
+Now let's add a node as a child of N. We can do this using the ``add_child``
+method.
 
 .. sourcecode:: ipython
 
@@ -489,17 +479,39 @@ Rerooting
 ~~~~~~~~~
 
 .. warning::
-    Currently does not work properly.
+    This reroot function has not been thouroughly tested. Use with caution.
+
+All trees in ``ivy`` are rooted. If you read in a tree that has been incorrectly
+rooted, you may want to reroot it. You can do this with the ``reroot``
+function. This function returns the root node of the rerooted tree. Note that
+unlike previous functions, the reroot function returns a *new* tree. The
+old tree is not modified.
 
 .. sourcecode:: ipython
 
-    In [*]: r.reroot(r["N"])
-    In [*]: r.descendants() # Missing descendants
-    Out[*]:
-    [Node(140144821839696),
-     Node(140144821839120, leaf, 'Ateles'),
-     Node(140144821839056, leaf, 'Macaca')]
-    In [*]: print r.ascii() # Raises a KeyError
+    In [*]: r2 = r.reroot(r["Galago"])
+    In [*]: print r2.ascii()
+    ----------------------------------------+ Galago
+    +
+    :         ------------------------------+ Pongo
+    ----------+
+              :         --------------------+ Homo
+              ---------N+
+                        :         ----------+ Ateles
+                        ----------+
+                                  ----------+ Macaca
+
+Dropping Tips
+~~~~~~~~~~~~~
+
+You can remove leaf nodes with the ``drop_tips`` function. Note that
+this function returns a *new* tree. The old tree is not modified.
+This function takes a list of tip labels.
+
+
+.. sourcecode:: ipython
+
+    In [*]: r3 = r.drop_tips(["Pongo", "Macaca"])
 
 Writing
 -------
@@ -512,9 +524,9 @@ currently only write in newick format.
 
 .. sourcecode:: ipython
 
-    In [*]: f = open("examples/primates_mangled.newick", "w")
-    In [*]: ivy.tree.write(r, outfile = f)
-    In [*]: f.close()
+    In [*]: with open("examples/primates_mangled.newick", "w") as f:
+                ivy.tree.write(r3, outfile = f)
+
 
 
 Using Treebase
@@ -556,17 +568,38 @@ You can parse the output of fetch_study using the parse_nexml function,
 Visualization with Matplotlib
 =============================
 
-``ivy`` supports interactive tree visualization with Matplotlib. 
+``ivy`` supports interactive tree visualization with Matplotlib.
 
-Displaying a tree is very simple
+Small Trees
+-----------
+
+Displaying a tree is very simple. For interactive tree viewing, you can run
+the command ``from ivy.interactive import *``, which imports a number of
+convenience functions for interacting with trees. After importing everything
+from ivy.interactive, you may, for instance, use ``readtree`` instead of
+``ivy.tree.read`` and ``treefig`` instead of ``ivy.vis.tree.TreeFigure``.
 
 .. sourcecode:: ipython
 
     In [*]: from ivy.interactive import *
-    In [*]: r = ivy.tree.read("examples/primates.newick")
+    In [*]: r = readtree("examples/primates.newick")
     In [*]: fig = treefig(r)
 
+You can also use the magic command ``%maketree`` in the ipython console to
+read in a tree.
+
+.. sourcecode:: ipython
+
+    In [*]: %maketree
+    Enter the name of a tree file or a newick string:
+    examples/primates.newick
+    Tree parsed and assigned to variable 'root'
+    In [*]: root
+    Out[*]: Node(139904996110480, root, 'root')
+
+
 .. image:: _images/visualization_1.png
+    :width: 700
 
 A tree figure by default consists of the tree with clade and leaf
 labels and a navigation toolbar. The navigation toolbar allows zooming and
@@ -583,20 +616,22 @@ with the ``toggle_overview`` method.
     In [*]: fig.toggle_overview()
 
 .. image:: _images/visualization_2.png
+    :width: 700
 
 You can retrieve information about a node or group of nodes by selecting
-them (selected nodes have green circles on them) 
+them (selected nodes have green circles on them)
 and accessing the ``selected`` nodes
 
 .. sourcecode:: ipython
 
     In [*]: fig.selected
-    Out [*]: 
+    Out [*]:
     [Node(139976891981456, leaf, 'Homo'),
      Node(139976891981392, 'A'),
      Node(139976891981520, leaf, 'Pongo')]
 
 .. image:: _images/visualization_3.png
+    :width: 700
 
 
 You can also select nodes from the command line. Entering an internal node will
@@ -607,29 +642,149 @@ select that node and all of its descendants.
     In [*]: fig.select_nodes(r["C"])
 
 .. image:: _images/visualization_4.png
+    :width: 700
 
-You can highlight certain branches using the ``highlight`` method. Again, 
-entering an internal node will highlight that node and its descendants. This
-also highlights the branches on the overview.
+You can highlight certain branches using the ``highlight`` method. Again,
+entering an internal node will highlight that node and its descendants.
+
+You can optionally show the highlighted branches on the overview panel using
+the ``ov`` keyword
 
 .. sourcecode:: ipython
 
-    In [*]: fig.highlight(r["B"])
+    In [*]: fig.highlight(r["B"], ov=True)
 
 .. image:: _images/visualization_5.png
+    :width: 700
 
-You can also decorate the tree with various symbols using the ``decorate``
-method. ``decorate`` can be called with any function from ``ivy.symbols``.
+You can add layers of various kinds using the ``add_layers`` method. The
+``layers`` module contains various functions for adding layers to the tree,
+including images, labels, shapes, etc.
+
+In fact, the ``highlight`` method is simply a wrapper for an ``add_layers``
+call.
 
 .. sourcecode:: ipython
 
-    In [*]: import ivy.vis.symbols
+    In [*]: from ivy.vis import layers
     In [*]: fig.redraw() # This clears the plot
-    In [*]: fig.decorate(ivy.vis.symbols.circles, r.leaves(), 
-            colors = ["red", "orange", "yellow", "green", "blue"])
+    In [*]: fig.add_layer(layers.add_circles, r.leaves(),
+            colors = ["red", "orange", "yellow", "green", "blue"],
+            ov=False) # Prevent layer from appearing on overview with ov keyword
 
 .. image:: _images/visualization_6.png
+    :width: 700
 
+The new layer will be cleared with the next call to ``fig.redraw``. You can
+store a layer and draw it every time using the ``store`` keyword. We can
+access our stored layers through the ``layers`` attribute of the figure
+
+.. sourcecode:: ipython
+    In [*]: fig.add_layer(layers.add_circles, r.leaves(),
+            colors = ["red", "orange", "yellow", "green", "blue"],
+            ov=False, store="circles")
+    In [*]: fig.layers
+    Out[*]: OrderedDict([('leaflabels', <functools.partial object at 0x7feda07292b8>), ('branchlabels', <functools.partial object at 0x7feda084b100>), ('circles', <functools.partial object at 0x7feda0752af8>)])
+
+As we can see, our figure has "leaflabels" and "branchlabels" as layers, as
+well as the new "circles" layer. You can toggle the visibility of a layer
+using the ``toggle_layer`` method and the layer's name. The layer is still
+there and can be accessed with ``fig.layers``, but it is not visible on
+the plot.
+
+.. sourcecode:: ipython
+    In [*]: fig.toggle_layer("circles")
+
+Large Trees
+-----------
+
+Oftentimes, the tree you are working with is too large to comfortably fit on
+one page. ``ivy`` has many tools for working with large trees and creating
+legible, printable figures of them. Let's try working on the plant phylogeny.
+
+.. sourcecode:: ipython
+
+    In [*]: r = readtree("examples/plants.newick")
+    In [*]: fig = treefig(r)
+
+.. image:: _images/plants_fig1.png
+    :width: 700
+
+When a tree has a large number of tips (>100), ``ivy`` automatically includes an
+overview on the side. This tree looks rather cluttered. We can try to clean it
+up by ladderizing the tree and toggling off the node labels
+
+.. sourcecode:: ipython
+
+    In [*]: fig.ladderize()
+    In [*]: fig.toggle_branchlabels()
+
+.. image:: _images/plants_fig2.png
+    :width: 700
+
+Here you can see that when all of the tip labels do not fit on the tree, the
+plot automatically only draws as many labels as will fit.
+
+Let's say we only want to look at the Solanales. The ``highlight`` function,
+combined with the ``find`` function, is very useful when working with large
+trees.
+
+.. sourcecode:: ipython
+
+    In [*]: sol = fig.find("Solanales")[0]
+    In [*]: fig.highlight(sol)
+
+.. image:: _images/plants_fig3.png
+    :width: 700
+
+We can zoom to this clade with the ``zoom_clade`` function.
+
+.. sourcecode:: ipython
+
+    In [*]: fig.zoom_clade(sol)
+
+.. image:: _images/plants_fig4.png
+    :width: 700
+
+Maybe we want to zoom out a little. We can select a few clades...
+
+.. image:: _images/plants_fig5.png
+    :width: 700
+
+And then zoom to the MRCA of the selected nodes
+
+.. sourcecode:: ipython
+
+    In [*]: c = fig.root.mrca(fig.selected)
+    In [*]: fig.zoom_clade(c)
+
+.. image:: _images/plants_fig6.png
+    :width: 700
+
+Another benefit to using ``ivy`` interactively is ``ivy``'s node autocomplete
+function. You can type in the partial name of a node and hit ``tab`` to
+autocomplete, just like with any other autocompletion in ipython.
+
+.. sourcecode:: ipython
+
+    In [*]: fig.root["Sy # Hit tab to autocomplete
+    Sylvichadsia  Symplocaceae  Synoum        Syrmatium
+    In [*]: fig.root["Sym # Hitting tab will complete the line
+    In [*]: fig.root["Symplocaceae"]
+    Out[*]: Node(139904995827408, leaf, 'Symplocaceae')
+
+``ivy`` also has tools for printing large figures across multiple pages. The
+figure method ``hardcopy`` creates an object that has methods for creating
+PDFs that can be printed or placed in documents. To print a large figure
+across multiple pages, you can use the ``render_multipage`` method of a
+``hardcopy`` object. For more information, look at the documentation for
+``render_multipage``. The following code will create a PDF that has the figure
+spread across 4x4 letter-size pages.
+
+.. sourcecode:: ipython
+
+    In [*]: h = fig.hardcopy()
+    In [*]: h.render_multipage(outfile="plants.pdf", dims = [34.0, 44.4])
 
 Performing analyses
 ===================
@@ -645,28 +800,32 @@ root node and a dictionary mapping node labels to character traits as inputs
 and outputs a dictionary mappinginternal nodes to tuples containing ancestral
 state, its variance (error), the contrast, and the contrasts's variance.
 
+.. TODO:: Add citation for tree
+
+The following example uses a consensus tree fro Sarkinen et al. 2013 and
+Ziegler et al. unpub. data.
+
 Note: This function requires that the root node have a length that is not none.
 Note: this function currently cannot handle polytomies.
 
 .. sourcecode:: ipython
 
     In [*]: import ivy
-    In [*]: r = ivy.tree.read("examples/primates.newick")
-    In [*]: r.length = 0.0 # Setting the root length to 0
-    In [*]: char1 = {
-                    "Homo": 4.09434,
-                    "Pongo": 3.61092,
-                    "Macaca": 2.37024,
-                    "Ateles": 2.02815,
-                    "Galago": -1.46968
-                    }
-    In [*]: c = ivy.contrasts.PIC(r, char1)
-    In [*]: for k,v in c.items():
-                print k.label, v
-    root (1.1837246133953971, 0.3757434703904836, 4.25050357912179, 1.6019055509527755)
-    A (3.85263, 0.385, 0.48341999999999974, 0.42)
-    B (3.2003784000000004, 0.3456, 1.48239, 0.875)
-    C (2.78082357912179, 0.6019055509527755, 1.1722284000000003, 0.9656)
+    In [*]: import csv
+    In [*]: import matplotlib.pyplot as plt
+    In [*]: r = ivy.tree.read("examples/solanaceae_sarkinen2013.newick")
+    In [*]: polvol = {}; stylen = {}
+    In [*]: with open("examples/pollenvolume_stylelength.csv", "r") as csvfile:
+                traits = csv.DictReader(csvfile, delimiter = ",", quotechar = '"')
+                for i in traits:
+                    polvol[i["Binomial"]] = float(i["PollenVolume"])
+                    stylen[i["Binomial"]] = float(i["StyleLength"])
+
+    In [*]: p = ivy.contrasts.PIC(r, polvol) # Contrasts for log-transformed pollen volume
+    In [*]: s = ivy.contrasts.PIC(r, stylen) # Contrasts for log-transformed style length
+    In [*]: pcons, scons = zip(*[ [p[key][2], s[key][2]] for key in p.keys() ])
+    In [*]: plt.scatter(scons,pcons)
+    In [*]: plt.show()
 
 
 Lineages Through Time
@@ -712,6 +871,7 @@ You can plot your results using ``Matplotlib``.
     In [*]: plt.show()
 
 .. image:: _images/ltt.png
+    :width: 700
 
 
 Phylorate plot
@@ -723,73 +883,181 @@ R library to generate phylorate plots.
 
 The following analysis is done using the whales dataset provided with BAMMtools.
 
-The first step is to read in the data and then import and use the necessary
-R functions to get the rate data for each branch.
-
 .. sourcecode:: ipython
 
-    In [*]: from rpy2.robjects.packages import importr
-    In [*]: import numpy as np
-    In [*]: from ivy.interactive import *
+    In [*]:  from ivy.r_funcs import phylorate
     In [*]: e = "whaleEvents.csv" # Event data created with BAMM
     In [*]: treefile = "whales.tre"
-    In [*]: ape = importr('ape')
-    In [*]: bamm = importr('BAMMtools')
-    In [*]: rutils = importr('utils')
-    In [*]: events = rutils.read_csv(e)
-    In [*]: tree = ape.read_tree(treefile)
-    In [*]: edata = bamm.getEventData(tree, eventdata=e, burnin=0.2)
-    In [*]: dtrates = bamm.dtRates(edata, 0.01, tmat=True).rx2('dtrates')
-    In [*]: nodeidx = np.array(dtrates.rx2('tmat').rx(True, 1), dtype=int)
-    In [*]: rates = np.array(dtrates.rx2('rates'))
-    In [*]: netdiv = rates[0]-rates[1]
+    In [*]: rates = phylorate(e, treefile, "netdiv")
 
-Now we are done using R functions. The rest can be done in Python.
-
-The next step is to read in the tree with ``ivy`` and then assign the Ape
-node indicies. Ape numbers nodes as following: for a tree with n leaves, the
-leaves and numbered 1:n in the order they appear in their file. The internal
-nodes are ordered in preorder sequence, starting with the root node as
-node n+1.
+We can add the results as a layer to a plot using the ``add_phylorate`` function
+in ``ivy.vis.layers``
 
 .. sourcecode:: ipython
 
-    In [*]: r = ivy.tree.read(treefile, type="newick")
-    In [*]: i = 1
-    In [*]: for lf in r.leaves():
-            lf.apeidx = i
-            i += 1
-    In [*]: for n in r.clades():
-            n.apeidx = i
-            i += 1
-    In [*]: f = treefig(r)
-
-Now we can generate the plot by drawing individual segments of each branch, 
-color-coded by rate along the branch.
+    In [*]: from ivy.vis import layers
+    In [*]: r = readtree(treefile)
+    In [*]: fig = treefig(r)
+    In [*]: fig.add_layer(layers.add_phylorate, rates[0], rates[1], ov=False,
+           store="netdiv")
 
 
-
-    In [*]: for n in r.descendants():
-            n.rates = netdiv[nodeidx==n.apeidx]
-            c = f.detail.n2c[n]
-            pc = f.detail.n2c[n.parent]
-            seglen = (c.x-pc.x)/len(n.rates)
-            for i, rate in enumerate(n.rates):
-                x0 = pc.x+i*seglen
-                x1 = x0+seglen
-                segments.append(((x0, c.y), (x1, c.y)))
-                values.append(rate)
-            segments.append(((pc.x, pc.y), (pc.x, c.y)))
-            values.append(n.rates[0])
-    In [*]: from matplotlib.cm import coolwarm
-    In [*]: from matplotlib.collections import LineCollection
-    In [*]: lc = LineCollection(segments, cmap=coolwarm, lw=2)
-    In [*]: lc.set_array(np.array(values))
-    In [*]: f.detail.add_collection(lc)
-    In [*]: f.figure.canvas.draw_idle()
 
 .. image:: _images/phylorate_plot.png
+    :width: 700
 
+Mk models
+---------
+``ivy`` has functions to fit an Mk model given a tree and a list of character
+states. There are functions to fit the Mk model using both maximum likelihood
+and Bayesian MCMC methods.
 
+To fit an Mk model, you need a tree and a list of character states. This list
+should only contain integers 0,1,2,...,N, with each integer corresponding to
+a state. The list of characters should be provided in preorder sequence.
 
+Let's read in some example data: plant habit in tobacco. We can load in a
+csv containing binomials and character states using the ``loadChars`` function.
+This gives us a dictionary mapping binomials to character states.
 
+.. sourcecode:: ipython
+
+    In [*]: tree = ivy.tree.read("examples/nicotiana.newick")
+    In [*]: chars = ivy.tree.loadChars("examples/nicotianaHabit.csv")
+
+Let's get our data into the correct format: we need to convert `chars` into
+a list of 0's and 1's matching the character states in preorder sequence
+
+.. sourcecode:: ipython
+
+    In [*]: charsPreorder = [ chars[n.label] for n in tree.leaves() ]
+    In [*]: charList = map(lambda x: 0 if x=="Herb" else 1, charsPreorder)
+
+We can take a look at how the states are distributed on the tree using the
+``tip_chars`` method on a tree figure object. In this case "Herb" will be
+represented by green and "Shrub" will be represented by brown.
+
+.. sourcecode:: ipython
+
+    In [*]: fig = ivy.vis.treevis.TreeFigure(tree)
+    In [*]: fig.tip_chars(charList, colors=["green", "brown"])
+
+.. image:: _images/nicotiana_1.png
+    :width: 700
+
+Now we are ready to fit the model. We will go over the maximum likelihood
+approach first.
+
+Maximum Likelihood
+~~~~~~~~~~~~~~~~~~
+Perhaps the simplest way to fit an Mk model is with the maximum likelihood
+approach. We will make use of the ``optimize`` module of ``scipy`` to find
+the maximum likelihood values of this model.
+
+First, we must consider what type of model to fit. `ivy` allows you to
+specify what kind of instantaneous rate matrix (Q matrix) to use.
+The options are:
+
+* **"ER"**: An equal-rates Q matrix has only one parameter: the forward and
+  backswards rates for all characters are all equal.
+* **"Sym"**: A symmetrical rates Q matrix forces forward and reverse rates
+  to be equal, but allows rates for different characters to differ. It has
+  a number of parameters equal to (N^2 - N)/2, where N is the number of
+  characters.
+* **"ARD"**: An all-rates different Q matrix allows all rates to vary freely.
+  It has a number of parameters equal to (N^2 - N).
+
+In this case, we will fit an ARD Q matrix.
+
+We also need to specify how the prior at the root is handled. There are a
+few ways to handle weighting the likelihood at the root:
+
+* **"Equal"**: When the likelihood at the root is set to equal, no weighting
+  is given to the root being in any particular state. All likelihoods
+  for all states are given equal weighting
+* **"Equilibrium"**: This setting causes the likelihoods at the root to be
+  weighted by the stationary distribution of the Q matrix, as is described
+  in Maddison et al 2007.
+* **"Fitzjohn"**: This setting causes the likelihoods at the root to be
+  weighted by how well each root state would explain the data at the tips,
+  as is described in Fitzjohn 2009.
+
+In this case we will use the "Fitzjohn" method.
+
+We can use the ``fitMk`` method with these settings to fit the model. This
+function returns a ``dict`` containing the fitted Q matrix, the log-likelihood,
+and the weighting at the root node.
+
+.. sourcecode:: ipython
+
+    In [*]: from ivy.chars import discrete
+    In [*]: mk_results = discrete.fitMk(tree, charList, Q="ARD", pi="Fitzjohn")
+    In [*]: print mk_results["Q"]
+    [[-0.01246449  0.01246449]
+     [ 0.09898439 -0.09898439]]
+    In [*]: print mk_results["Log-likelihood"]
+    -11.3009106093
+    In [*]: print mk_results["pi"]
+    {0: 0.088591248260230959, 1: 0.9114087517397691}
+
+Even this simple example has produced some interesting results. It is
+interesting to see that the model has placed a higher weight on the root
+being shrubby because transitions to shrubbiness are less common than the
+reverse.
+
+Bayesian
+~~~~~~~~
+``ivy`` has a framework in place for using ``pymc`` to sample from a Bayesian
+Mk model. The process of fitting a Bayesian Mk model is very similar to fitting
+a maximum likelihood model.
+
+The module ``bayesian_models`` has a function ``create_mk_model`` that takes
+the same input as ``fitMk`` and creates a ``pymc`` model that can  be sampled
+with an MCMC chain
+
+First we create the model.
+
+.. sourcecode:: ipython
+
+    In [*]: from ivy.chars import bayesian_models
+    In [*]: from ivy.chars.bayesian_models import create_mk_model
+    In [*]: mk_mod = create_mk_model(tree, charList, Qtype="ARD", pi="Fitzjohn")
+
+Now that we have the model, we can use ``pymc`` syntax to set up an MCMC chain.
+
+.. sourcecode:: ipython
+
+    In [*]: import pymc
+    In [*]: mk_mcmc = pymc.MCMC(mk_mod)
+    In [*]: mk_mcmc.sample(4000, burn=200, thin = 2)
+    [-----------------100%-----------------] 2000 of 2000 complete in 4.7 sec
+
+We can access the results using the ``trace`` method of the mcmc object and
+giving it the name of the parameter we want. In this case, we want "Qparams"
+
+.. sourcecode:: ipython
+
+    In [*]: mk_mcmc.trace("Qparams")[:]
+    array([[ 0.01756608,  0.07222648],
+       [ 0.03266443,  0.05712813],
+       [ 0.03266443,  0.05712813],
+       ...,
+       [ 0.01170189,  0.03909211],
+       [ 0.01170189,  0.03909211],
+       [ 0.00989616,  0.03305975]])
+
+Each element of the trace is an array containing the two fitted Q parameters.
+Let's get the 5%, 50%, and 95% percentiles for both parameters
+
+.. sourcecode:: ipython
+
+    In [*]: import numpy as np
+    In [*]: Q01 = [ i[0] for i in mk_mcmc.trace("Qparams")[:] ]
+    In [*]: Q10 = [ i[1] for i in mk_mcmc.trace("Qparams")[:] ]
+    In [*]: np.percentile(Q01, [5,50,95])
+    Out[*]: array([ 0.00308076,  0.01844342,  0.06290078])
+    In [*]: np.percentile(Q10, [5,50,95])
+    Out[*]: array([ 0.03294584,  0.09525662,  0.21803742])
+    
+Unsurprisingly, the results are similar to the ones we got from the maximum
+likelihood analysis

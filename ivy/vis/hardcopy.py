@@ -3,6 +3,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import tree
 from axes_utils import adjust_limits
+from pyPdf import PdfFileWriter, PdfFileReader
+from StringIO import StringIO
 
 ## class TreeFigure:
 ##     def __init__(self):
@@ -87,8 +89,8 @@ class TreeFigure:
     def detail(self):
         return self.axes
         
-    def savefig(self, fname):
-        self.figure.savefig(fname)
+    def savefig(self, fname, format="pdf"):
+        self.figure.savefig(fname, format = format)
 
     def set_relative_width(self, relwidth):
         w, h = self.figure.get_size_inches()
@@ -104,3 +106,110 @@ class TreeFigure:
 
     def home(self):
         self.axes.home()
+        
+        
+    def render_multipage(self, outfile, pagesize = [8.5, 11.0], 
+                         dims = None, border = 0.393701, landscape = False):
+        """
+        Create a multi-page PDF document where the figure is cut into
+        multiple pages. Used for printing large figures.
+        
+        
+        Args:
+            outfile (string): The path to the output file.
+            pagesize (list): Two floats. Page size of each individual page
+              in inches. Defaults to 8.5 x 11.0.
+            dims (list): Two floats. The dimensions of the final figure in 
+              inches. Defaults to the original size of the figure.
+            border (float): The amount of overlap (in inches) between each page 
+              to make taping them together easier. Defaults to 0.393701 (1 cm)
+            landscape (bool): Whether or not each page will be in landscape
+              orientation. Defaults to false.
+        """
+        pgwidth, pgheight = pagesize if not landscape \
+                            else (pagesize[1], pagesize[0])
+        #print "drawing width, height:", drawing.width/inch, drawing.height/inch
+        if dims:
+            self.width = dims[0]
+            self.height = dims[1]
+        else:
+            self.width, self.height = self.figure.get_size_inches()
+        if self.width > pgwidth - 2*border:
+            scalefact = min(
+                [(self.width-((self.width/pgwidth-1)*border*2))/self.width, 
+                 (self.height-((self.height/pgheight-1)*border*2))/self.height])
+            #self.figure.set_size_inches(scalefact*self.width, scalefact*self.height)
+            #self.width = scalefact*self.width; self.height = scalefact*self.height
+        else:
+            scalefact = 1.0
+        
+        self.width *= scalefact # In inches
+        self.height *= scalefact
+        self.figure.set_size_inches([self.width, self.height])
+      
+        #border *= scalefact
+        dwidth = self.width * 72.0 # In pixels (72 DPI)
+        dheight = self.height * 72.0
+
+        output = PdfFileWriter()
+        outfile = file(outfile, "wb")
+
+        buf = StringIO()
+        self.savefig(buf)
+        pgwidth = pgwidth*72
+        pgheight = pgheight*72
+        
+        upper = border
+        lower = 0
+        right = pgwidth
+        left = 0
+        
+        pgnum = 0
+        vpgnum = 0
+        hpgnum = 0
+        
+        border = border*72 # Converting to pixels in 72 DPI
+        
+        while upper < dheight:
+            #if vpgnum == 0:
+            #    vdelta = 0.0
+            #else:
+            #    vdelta = 2*border*vpgnum
+            buf.seek(0)
+            tmp = PdfFileReader(buf)
+            page = tmp.getPage(0)
+            box = page.mediaBox
+            upper += pgheight-border
+            lower = upper-pgheight
+            #uly = float(box.getUpperLeft_y())
+            #ulx = float(box.getUpperLeft_x())
+            #upper = uly+border+vdelta-vpgnum*pgheight
+            #lower = uly+border+delta-(pgnum+1)*pgheight
+            #lower = upper-pgheight
+            box.setUpperRight((right, upper))
+            box.setUpperLeft((left, upper))
+            box.setLowerRight((right, lower))
+            box.setLowerLeft((left, lower))
+            output.addPage(page)
+            pgnum += 1
+            vpgnum += 1
+            if (upper >= dheight) & (right < dwidth):
+                lower = 0
+                upper = border
+                right += pgwidth-border
+                left = right-pgwidth
+                vpgnum = 0
+
+        output.write(outfile)
+        return pgnum, scalefact
+        
+        
+if __name__ == "__main__":
+    import ivy
+    from ivy.interactive import *
+    r = ivy.tree.read("examples/plants.newick")
+    f = treefig(r)
+    h = f.hardcopy()
+    h.render_multipage(outfile = "test.pdf")
+    
+

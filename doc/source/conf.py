@@ -33,7 +33,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'ipython_autonumbering'
+    'ipython_autonumbering',
+    'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -118,7 +119,11 @@ html_theme = 'classic'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {"footerbgcolor":"#0E5C2B", "footertextcolor":"#DBF1BE",
+                      "sidebarbgcolor":"#287C47", "sidebartextcolor":"#DBF1BE",
+                      "sidebarlinkcolor":"#A7D4B8", "headbgcolor":"#C1E593",
+                      "headtextcolor":"#0E5C2B","codebgcolor":"#DBF1BE",
+                      "relbarbgcolor":"#0E5C2B"}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
