@@ -33,6 +33,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -49,9 +52,11 @@
 
 <span class="sd">The function of interest is `calc_node_positions` (aka nodepos)</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<div class="viewcode-block" id="Coordinates"><a class="viewcode-back" href="../../ivy.html#ivy.layout.Coordinates">[docs]</a><span class="k">class</span> <span class="nc">Coordinates</span><span class="p">:</span>
+<div class="viewcode-block" id="Coordinates"><a class="viewcode-back" href="../../ivy.layout.html#ivy.layout.Coordinates">[docs]</a><span class="k">class</span> <span class="nc">Coordinates</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Coordinates class for storing xy coordinates</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -62,12 +67,11 @@
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&quot;Coordinates(</span><span class="si">%g</span><span class="s">, </span><span class="si">%g</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Coordinates.point"><a class="viewcode-back" href="../../ivy.html#ivy.layout.Coordinates.point">[docs]</a>    <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinates.point"><a class="viewcode-back" href="../../ivy.layout.html#ivy.layout.Coordinates.point">[docs]</a>    <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
 </div></div>
-<div class="viewcode-block" id="smooth_xpos"><a class="viewcode-back" href="../../ivy.html#ivy.layout.smooth_xpos">[docs]</a><span class="k">def</span> <span class="nf">smooth_xpos</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">n2coords</span><span class="p">):</span>
+<div class="viewcode-block" id="smooth_xpos"><a class="viewcode-back" href="../../ivy.layout.html#ivy.layout.smooth_xpos">[docs]</a><span class="k">def</span> <span class="nf">smooth_xpos</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">n2coords</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    RR: What does smoothing do? -CZ</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">isleaf</span><span class="p">:</span>
         <span class="n">children</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span>
@@ -79,11 +83,15 @@
             <span class="n">cx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span> <span class="n">n2coords</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">children</span> <span class="p">])</span>
             <span class="n">n2coords</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">px</span> <span class="o">+</span> <span class="n">cx</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
 </div>
-<div class="viewcode-block" id="depth_length_preorder_traversal"><a class="viewcode-back" href="../../ivy.html#ivy.layout.depth_length_preorder_traversal">[docs]</a><span class="k">def</span> <span class="nf">depth_length_preorder_traversal</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">n2coords</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">isroot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="depth_length_preorder_traversal"><a class="viewcode-back" href="../../ivy.layout.html#ivy.layout.depth_length_preorder_traversal">[docs]</a><span class="k">def</span> <span class="nf">depth_length_preorder_traversal</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">n2coords</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">isroot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate node depth (root = depth 0) and length to root</span>
 
-<span class="sd">    Returns: Dict mapping nodes to coordinate objects. Coordinate</span>
+<span class="sd">    Args:</span>
+<span class="sd">       node (Node): A node object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Mapping of nodes to coordinate objects. Coordinate</span>
 <span class="sd">             objects have attributes &quot;depth&quot; and &quot;length_to_root&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n2coords</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -99,7 +107,7 @@
             <span class="n">coords</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">coords</span><span class="o">.</span><span class="n">length_to_root</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">length_to_root</span> <span class="o">+</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">length</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">print</span> <span class="n">node</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">label</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">coords</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">coords</span><span class="o">.</span><span class="n">length_to_root</span> <span class="o">=</span> <span class="mi">0</span>
@@ -110,24 +118,24 @@
 
     <span class="k">return</span> <span class="n">n2coords</span>
 </div>
-<div class="viewcode-block" id="calc_node_positions"><a class="viewcode-back" href="../../ivy.html#ivy.layout.calc_node_positions">[docs]</a><span class="k">def</span> <span class="nf">calc_node_positions</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span>
+<div class="viewcode-block" id="calc_node_positions"><a class="viewcode-back" href="../../ivy.layout.html#ivy.layout.calc_node_positions">[docs]</a><span class="k">def</span> <span class="nf">calc_node_positions</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span>
                         <span class="n">lpad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rpad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tpad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bpad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                         <span class="n">scaled</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n2coords</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate where nodes should be positioned in 2d space for drawing a tree</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        * node: A (root) node</span>
-<span class="sd">        * width: Float. The width of the canvas</span>
-<span class="sd">        * height: Float. The height of the canvas</span>
-<span class="sd">        * lpad, rpad, tpad, bpad: Float. Padding on the edges of the canvas.</span>
+<span class="sd">        node (Node): A (root) node</span>
+<span class="sd">        width (float): The width of the canvas</span>
+<span class="sd">        height (float): The height of the canvas</span>
+<span class="sd">        lpad, rpad, tpad, bpad (float): Padding on the edges of the canvas.</span>
 <span class="sd">                                Optional, defaults to 0.</span>
-<span class="sd">        * scaled: Bool. Whether or not the tree is scaled. Optional, defaults to</span>
+<span class="sd">        scaled (bool): Whether or not the tree is scaled. Optional, defaults to</span>
 <span class="sd">                True.</span>
-<span class="sd">        * smooth: Bool. Whether or not to smooth the tree. Optional, defaults to</span>
+<span class="sd">        smooth (bool): Whether or not to smooth the tree. Optional, defaults to</span>
 <span class="sd">                True.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        Dict mapping nodes to Coordinates object</span>
+<span class="sd">        dict: Mapping of nodes to Coordinates object</span>
 <span class="sd">    Notes:</span>
 <span class="sd">        Origin is at upper left</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -174,11 +182,11 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
             <span class="n">smooth_xpos</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">n2coords</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">coords</span> <span class="ow">in</span> <span class="n">n2coords</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">coords</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">n2coords</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
         <span class="n">coords</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">lpad</span>
         <span class="n">coords</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">tpad</span>
 
-    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="n">n2coords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">n2coords</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">n2coords</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">parent</span><span class="p">]</span>
             <span class="n">coords</span><span class="o">.</span><span class="n">px</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">;</span> <span class="n">coords</span><span class="o">.</span><span class="n">py</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">y</span>
@@ -189,7 +197,7 @@
 </div>
 <span class="n">nodepos</span> <span class="o">=</span> <span class="n">calc_node_positions</span>
 
-<div class="viewcode-block" id="cartesian"><a class="viewcode-back" href="../../ivy.html#ivy.layout.cartesian">[docs]</a><span class="k">def</span> <span class="nf">cartesian</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">leafspace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n2coords</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="cartesian"><a class="viewcode-back" href="../../ivy.layout.html#ivy.layout.cartesian">[docs]</a><span class="k">def</span> <span class="nf">cartesian</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">leafspace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n2coords</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
               <span class="n">smooth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">,</span> <span class="n">yunit</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    RR: What is the difference between this function and calc_node_positions?</span>
@@ -250,7 +258,7 @@
     <span class="k">return</span> <span class="n">n2coords</span>
 </div>
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">tree</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tree</span>
     <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;(a:3,(b:2,(c:4,d:5):1,(e:3,(f:1,g:1):2):2):2);&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">iternodes</span><span class="p">()):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">isleaf</span><span class="p">:</span>
@@ -290,6 +298,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>

@@ -33,6 +33,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -44,10 +47,12 @@
           <div class="body" role="main">
             
   <h1>Source code for ivy.data</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">types</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">csv</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
-<div class="viewcode-block" id="Matrix"><a class="viewcode-back" href="../../ivy.html#ivy.data.Matrix">[docs]</a><span class="k">class</span> <span class="nc">Matrix</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Matrix"><a class="viewcode-back" href="../../ivy.data.html#ivy.data.Matrix">[docs]</a><span class="k">class</span> <span class="nc">Matrix</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">col</span> <span class="o">=</span> <span class="mi">0</span>
@@ -56,7 +61,7 @@
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Matrix.get"><a class="viewcode-back" href="../../ivy.html#ivy.data.Matrix.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Matrix.get"><a class="viewcode-back" href="../../ivy.data.html#ivy.data.Matrix.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">col</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -75,7 +80,7 @@
     <span class="c">##         self.data = dict()</span>
 
 </div></div>
-<div class="viewcode-block" id="Rows"><a class="viewcode-back" href="../../ivy.html#ivy.data.Rows">[docs]</a><span class="k">class</span> <span class="nc">Rows</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Rows"><a class="viewcode-back" href="../../ivy.data.html#ivy.data.Rows">[docs]</a><span class="k">class</span> <span class="nc">Rows</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A helper class for associating row-based data with nodes.</span>
 <span class="sd">    Implements a dictionary-like interface that allows lookups by,</span>
@@ -93,23 +98,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">if</span> <span class="n">array</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_array</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Rows.index_array"><a class="viewcode-back" href="../../ivy.html#ivy.data.Rows.index_array">[docs]</a>    <span class="k">def</span> <span class="nf">index_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+<div class="viewcode-block" id="Rows.index_array"><a class="viewcode-back" href="../../ivy.data.html#ivy.data.Rows.index_array">[docs]</a>    <span class="k">def</span> <span class="nf">index_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
         <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">;</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">k</span><span class="p">(</span><span class="n">row</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 </div>
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="Rows.__getitem__"><a class="viewcode-back" href="../../ivy.data.html#ivy.data.Rows.__getitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="s">&quot;item may be a node or label&quot;</span>
         <span class="k">try</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="ne">AttributeError</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="ne">AttributeError</span><span class="p">:</span>
                         <span class="n">v</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">return</span> <span class="n">v</span></div>
+        <span class="k">return</span> <span class="n">v</span></div></div>
 </pre></div>
 
           </div>
@@ -140,6 +145,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>

@@ -33,6 +33,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -47,11 +50,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Functions to get trees and character data from treebase</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+<span class="k">try</span><span class="p">:</span> <span class="c"># Python 3</span>
+    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span> <span class="c"># Python 2</span>
+    <span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
 <span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">storage</span> <span class="kn">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">.storage</span> <span class="kn">import</span> <span class="n">Storage</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span>
 
 <span class="c"># &quot;http://purl.org/phylo/treebase/phylows/study/TB2:S11152&quot;</span>
@@ -74,17 +80,19 @@
 
 <span class="n">AMBIG_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;([{][a-zA-Z]+[}])&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="fetch_study"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.fetch_study">[docs]</a><span class="k">def</span> <span class="nf">fetch_study</span><span class="p">(</span><span class="n">study_id</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;nexml&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="fetch_study"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.fetch_study">[docs]</a><span class="k">def</span> <span class="nf">fetch_study</span><span class="p">(</span><span class="n">study_id</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;nexml&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a study from treebase in one of various formats</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        * study_id: Str. The id of the study</span>
-<span class="sd">        * format: Str.  One of [&quot;rdf&quot;, &quot;html&quot;, &quot;nexml&quot;, &quot;nexus&quot;]</span>
+<span class="sd">        study_id (str): The id of the study</span>
+<span class="sd">        format (str):  One of [&quot;rdf&quot;, &quot;html&quot;, &quot;nexml&quot;, &quot;nexus&quot;]</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        * Str representing a nexus file (if format = &quot;nexus&quot;)</span>
+<span class="sd">        Str representing a nexus file (if format = &quot;nexus&quot;)</span>
+
 <span class="sd">        OR</span>
-<span class="sd">        * An lxml etree object</span>
+
+<span class="sd">        An lxml etree object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span> <span class="n">study_id</span> <span class="o">=</span> <span class="s">&quot;S</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">study_id</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="k">pass</span>
@@ -96,7 +104,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="parse_chars"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.parse_chars">[docs]</a><span class="k">def</span> <span class="nf">parse_chars</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">otus</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_chars"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.parse_chars">[docs]</a><span class="k">def</span> <span class="nf">parse_chars</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">otus</span><span class="p">):</span>
     <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">chars</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NEXML</span><span class="o">+</span><span class="s">&quot;characters&quot;</span><span class="p">):</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">Storage</span><span class="p">(</span><span class="n">chars</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
@@ -132,17 +140,18 @@
         <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">v</span>
 </div>
-<div class="viewcode-block" id="parse_trees"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.parse_trees">[docs]</a><span class="k">def</span> <span class="nf">parse_trees</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">otus</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_trees"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.parse_trees">[docs]</a><span class="k">def</span> <span class="nf">parse_trees</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">otus</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get trees from an etree object</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        * e: A nexml document parsed by etree</span>
-<span class="sd">        * otus: OTUs returned by parse_otus</span>
+<span class="sd">        e: A nexml document parsed by etree</span>
+<span class="sd">        otus: OTUs returned by parse_otus</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        * A list of ivy Storage objects each containing every node of a tree.</span>
+<span class="sd">        list: A list of ivy Storage objects each</span>
+<span class="sd">          containing every node of a tree.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">tree</span> <span class="kn">import</span> <span class="n">Node</span>
+    <span class="kn">from</span> <span class="nn">.tree</span> <span class="kn">import</span> <span class="n">Node</span>
     <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">tb</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NEXML</span><span class="o">+</span><span class="s">&quot;trees&quot;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">te</span> <span class="ow">in</span> <span class="n">tb</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NEXML</span><span class="o">+</span><span class="s">&quot;tree&quot;</span><span class="p">):</span>
@@ -164,7 +173,7 @@
                 <span class="k">if</span> <span class="n">length</span><span class="p">:</span>
                     <span class="n">n</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="p">[</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">parent</span> <span class="p">]</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="p">[</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">parent</span> <span class="p">]</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">r</span><span class="o">.</span><span class="n">isroot</span> <span class="o">=</span> <span class="bp">True</span>
@@ -173,14 +182,14 @@
             <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">v</span>
 </div>
-<div class="viewcode-block" id="parse_otus"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.parse_otus">[docs]</a><span class="k">def</span> <span class="nf">parse_otus</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_otus"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.parse_otus">[docs]</a><span class="k">def</span> <span class="nf">parse_otus</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get OTUs from an etree object</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        * e: A nexml document parsed by etree</span>
+<span class="sd">        e: A nexml document parsed by etree</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        * A dict mapping keys to OTUs contained in ivy Storage objects</span>
+<span class="sd">        dict: A dict mapping keys to OTUs contained in ivy Storage objects</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">v</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">otus</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NEXML</span><span class="o">+</span><span class="s">&quot;otus&quot;</span><span class="p">):</span>
@@ -203,15 +212,15 @@
             <span class="n">v</span><span class="p">[</span><span class="n">otu</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">otu</span>
     <span class="k">return</span> <span class="n">v</span>
 </div>
-<div class="viewcode-block" id="parse_nexml"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.parse_nexml">[docs]</a><span class="k">def</span> <span class="nf">parse_nexml</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_nexml"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.parse_nexml">[docs]</a><span class="k">def</span> <span class="nf">parse_nexml</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse an etree ElementTree</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        * doc: An etree ElementTree or a file that can be parsed into</span>
+<span class="sd">        doc: An etree ElementTree or a file that can be parsed into</span>
 <span class="sd">          an etree ElementTree with etree.parse</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        * An ivy Storage object containing all the information from the</span>
+<span class="sd">        An ivy Storage object containing all the information from the</span>
 <span class="sd">          nexml file: Characters, metadata, OTUs, and trees.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">_ElementTree</span><span class="p">,</span> <span class="n">etree</span><span class="o">.</span><span class="n">_Element</span><span class="p">)):</span>
@@ -237,8 +246,8 @@
                    <span class="n">chars</span> <span class="o">=</span> <span class="n">parse_chars</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">otus</span><span class="p">),</span>
                    <span class="n">trees</span> <span class="o">=</span> <span class="n">parse_trees</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">otus</span><span class="p">))</span>
 </div>
-<div class="viewcode-block" id="parse_states"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.parse_states">[docs]</a><span class="k">def</span> <span class="nf">parse_states</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-    <span class="s">&quot;e is a characters element&quot;</span>
+<div class="viewcode-block" id="parse_states"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.parse_states">[docs]</a><span class="k">def</span> <span class="nf">parse_states</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;e is a characters element&quot;&quot;&quot;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NEXML</span><span class="o">+</span><span class="s">&quot;format&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">sts</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NEXML</span><span class="o">+</span><span class="s">&quot;states&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">states2symb</span> <span class="o">=</span> <span class="p">{}</span>
@@ -268,15 +277,15 @@
                    <span class="n">symb2states</span><span class="o">=</span><span class="n">symb2states</span><span class="p">,</span>
                    <span class="n">id2symb</span><span class="o">=</span><span class="n">id2symb</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="parse_charsets"><a class="viewcode-back" href="../../ivy.html#ivy.treebase.parse_charsets">[docs]</a><span class="k">def</span> <span class="nf">parse_charsets</span><span class="p">(</span><span class="n">study_id</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<div class="viewcode-block" id="parse_charsets"><a class="viewcode-back" href="../../ivy.treebase.html#ivy.treebase.parse_charsets">[docs]</a><span class="k">def</span> <span class="nf">parse_charsets</span><span class="p">(</span><span class="n">study_id</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
     <span class="n">nx</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">fetch_study</span><span class="p">(</span><span class="n">study_id</span><span class="p">,</span> <span class="s">&#39;nexus&#39;</span><span class="p">))</span>
     <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;CHARSET &quot;</span><span class="p">):</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">first</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">))</span>
+            <span class="n">first</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">)))</span>
             <span class="n">d</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">first</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">last</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">d</span>
 </div>
@@ -320,6 +329,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>

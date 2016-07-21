@@ -33,6 +33,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -44,6 +47,8 @@
           <div class="body" role="main">
             
   <h1>Source code for ivy.demo</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">IPython.lib.demo</span> <span class="kn">import</span> <span class="n">IPythonDemo</span><span class="p">,</span> <span class="n">ClearIPDemo</span>
 <span class="c">## from IPython.genutils import Term</span>
@@ -51,8 +56,8 @@
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 
-<div class="viewcode-block" id="Demo"><a class="viewcode-back" href="../../ivy.html#ivy.demo.Demo">[docs]</a><span class="k">class</span> <span class="nc">Demo</span><span class="p">(</span><span class="n">ClearIPDemo</span><span class="p">):</span>
-<div class="viewcode-block" id="Demo.show"><a class="viewcode-back" href="../../ivy.html#ivy.demo.Demo.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Demo"><a class="viewcode-back" href="../../ivy.demo.html#ivy.demo.Demo">[docs]</a><span class="k">class</span> <span class="nc">Demo</span><span class="p">(</span><span class="n">ClearIPDemo</span><span class="p">):</span>
+<div class="viewcode-block" id="Demo.show"><a class="viewcode-back" href="../../ivy.demo.html#ivy.demo.Demo.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Show a single block on screen&quot;&quot;&quot;</span>
 
         <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
@@ -66,15 +71,15 @@
                 <span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mf">0.1</span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">cout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">src_blocks_colored</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src_blocks_colored</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="nb">file</span><span class="o">=</span><span class="n">cout</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
         <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;Hit &lt;Enter&gt;, then type %next to proceed or %back to go back one step.&quot;</span>
-        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">cout</span><span class="p">,</span> <span class="n">s</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">cout</span><span class="p">)</span>
         <span class="n">cout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
     
 </div></div>
-<div class="viewcode-block" id="demo"><a class="viewcode-back" href="../../ivy.html#ivy.demo.demo">[docs]</a><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="demo"><a class="viewcode-back" href="../../ivy.demo.html#ivy.demo.demo">[docs]</a><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="n">__demo__</span> <span class="o">=</span> <span class="n">Demo</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
     <span class="n">__demo__</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">speed</span>
     <span class="k">def</span> <span class="nf">n</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span> <span class="n">__demo__</span><span class="p">()</span>
@@ -118,6 +123,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>

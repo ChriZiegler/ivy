@@ -33,6 +33,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -49,28 +52,29 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Adds to the interactive IPython/pylab environment</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">ivy</span>
 <span class="kn">import</span> <span class="nn">ivy.vis</span>
-<span class="kn">from</span> <span class="nn">ivy.vis</span> <span class="kn">import</span> <span class="n">symbols</span>
 
-<div class="viewcode-block" id="readtree"><a class="viewcode-back" href="../../ivy.html#ivy.interactive.readtree">[docs]</a><span class="k">def</span> <span class="nf">readtree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">return</span> <span class="n">ivy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="viewcode-block" id="readtree"><a class="viewcode-back" href="../../ivy.interactive.html#ivy.interactive.readtree">[docs]</a><span class="k">def</span> <span class="nf">readtree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">return</span> <span class="n">ivy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="readaln"><a class="viewcode-back" href="../../ivy.html#ivy.interactive.readaln">[docs]</a><span class="k">def</span> <span class="nf">readaln</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">return</span> <span class="n">ivy</span><span class="o">.</span><span class="n">align</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="viewcode-block" id="readaln"><a class="viewcode-back" href="../../ivy.interactive.html#ivy.interactive.readaln">[docs]</a><span class="k">def</span> <span class="nf">readaln</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">return</span> <span class="n">ivy</span><span class="o">.</span><span class="n">align</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="treefig"><a class="viewcode-back" href="../../ivy.html#ivy.interactive.treefig">[docs]</a><span class="k">def</span> <span class="nf">treefig</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">ivy.vis</span> <span class="kn">import</span> <span class="n">TreeFigure</span><span class="p">,</span> <span class="n">MultiTreeFigure</span>
+<div class="viewcode-block" id="treefig"><a class="viewcode-back" href="../../ivy.interactive.html#ivy.interactive.treefig">[docs]</a><span class="k">def</span> <span class="nf">treefig</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">ivy.vis.treevis</span> <span class="kn">import</span> <span class="n">TreeFigure</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">TreeFigure</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">MultiTreeFigure</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-            <span class="k">print</span> <span class="n">arg</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">fig</span>
 </div>
-<div class="viewcode-block" id="alnfig"><a class="viewcode-back" href="../../ivy.html#ivy.interactive.alnfig">[docs]</a><span class="k">def</span> <span class="nf">alnfig</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="alnfig"><a class="viewcode-back" href="../../ivy.interactive.html#ivy.interactive.alnfig">[docs]</a><span class="k">def</span> <span class="nf">alnfig</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">ivy.vis</span> <span class="kn">import</span> <span class="n">AlignmentFigure</span>
     <span class="k">return</span> <span class="n">AlignmentFigure</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
@@ -90,7 +94,7 @@
         <span class="c">##     &quot;(Try dragging one into the terminal):\n&quot;</span>
         <span class="c">##     ])</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Enter the name of a tree file or a newick string:</span><span class="se">\n</span><span class="s">&quot;</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s">&#39;&quot;&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">fname</span> <span class="ow">and</span> <span class="n">fname</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">:</span>
@@ -103,11 +107,11 @@
             <span class="c">## IPython.ipapi.get().to_user_ns({treename:root})</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> = ivy.tree.read(&#39;</span><span class="si">%s</span><span class="s">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">treename</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
             <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">ex</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-            <span class="k">print</span> <span class="s">&quot;Tree parsed and assigned to variable &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">treename</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Tree parsed and assigned to variable &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">treename</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">print</span> <span class="s">&quot;Unable to parse tree file &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">fname</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Unable to parse tree file &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">&quot;Cancelled&quot;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Cancelled&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">__node_completer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
     <span class="n">symbol</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">symbol</span>
@@ -156,7 +160,7 @@
             <span class="p">)</span>
 
 <span class="k">except</span><span class="p">:</span>
-    <span class="k">print</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Magic commands and completers requires IPython &gt;= 0.11</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
 
 <span class="c">## if __name__ == &quot;__main__&quot;:</span>
@@ -194,6 +198,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">ivy 0.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
