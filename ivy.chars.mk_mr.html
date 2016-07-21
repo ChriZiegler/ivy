@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ivy.chars.mk_mr module &mdash; ivy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ivy 0.1 documentation" href="index.html" />
+    <link rel="up" title="ivy.chars package" href="ivy.chars.html" />
+    <link rel="next" title="ivy.chars.recon module" href="ivy.chars.recon.html" />
+    <link rel="prev" title="ivy.chars.mk module" href="ivy.chars.mk.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ivy.chars.recon.html" title="ivy.chars.recon module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ivy.chars.mk.html" title="ivy.chars.mk module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ivy 0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >ivy</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="ivy.html" >ivy package</a> &raquo;</li>
+          <li class="nav-item nav-item-3"><a href="ivy.chars.html" accesskey="U">ivy.chars package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-ivy.chars.mk_mr">
+<span id="ivy-chars-mk-mr-module"></span><h1>ivy.chars.mk_mr module<a class="headerlink" href="#module-ivy.chars.mk_mr" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="ivy.chars.mk_mr.ModelOrderMetropolis">
+<em class="property">class </em><code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">ModelOrderMetropolis</code><span class="sig-paren">(</span><em>stochastic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#ModelOrderMetropolis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.ModelOrderMetropolis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">pymc.StepMethods.Metropolis</span></code></p>
+<p>Custom step method for model order</p>
+<dl class="method">
+<dt id="ivy.chars.mk_mr.ModelOrderMetropolis.competence">
+<code class="descname">competence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#ModelOrderMetropolis.competence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.ModelOrderMetropolis.competence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ivy.chars.mk_mr.ModelOrderMetropolis.propose">
+<code class="descname">propose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#ModelOrderMetropolis.propose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.ModelOrderMetropolis.propose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ivy.chars.mk_mr.ModelOrderMetropolis.reject">
+<code class="descname">reject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#ModelOrderMetropolis.reject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.ModelOrderMetropolis.reject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ivy.chars.mk_mr.SwitchpointMetropolis">
+<em class="property">class </em><code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">SwitchpointMetropolis</code><span class="sig-paren">(</span><em>stochastic</em>, <em>tree</em>, <em>seg_map</em>, <em>stepsize=0.05</em>, <em>seglen=0.02</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#SwitchpointMetropolis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.SwitchpointMetropolis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">pymc.StepMethods.Metropolis</span></code></p>
+<p>Custom step algorithm for selecting a new switchpoint</p>
+<dl class="method">
+<dt id="ivy.chars.mk_mr.SwitchpointMetropolis.competence">
+<code class="descname">competence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#SwitchpointMetropolis.competence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.SwitchpointMetropolis.competence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ivy.chars.mk_mr.SwitchpointMetropolis.global_step">
+<code class="descname">global_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#SwitchpointMetropolis.global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.SwitchpointMetropolis.global_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ivy.chars.mk_mr.SwitchpointMetropolis.local_step">
+<code class="descname">local_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#SwitchpointMetropolis.local_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.SwitchpointMetropolis.local_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ivy.chars.mk_mr.SwitchpointMetropolis.propose">
+<code class="descname">propose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#SwitchpointMetropolis.propose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.SwitchpointMetropolis.propose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ivy.chars.mk_mr.SwitchpointMetropolis.reject">
+<code class="descname">reject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#SwitchpointMetropolis.reject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.SwitchpointMetropolis.reject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.create_likelihood_function_multimk">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">create_likelihood_function_multimk</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>Qtype</em>, <em>nregime</em>, <em>pi=u'Equal'</em>, <em>findmin=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#create_likelihood_function_multimk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.create_likelihood_function_multimk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.create_likelihood_function_multimk_mods">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">create_likelihood_function_multimk_mods</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>mods</em>, <em>pi=u'Equal'</em>, <em>findmin=True</em>, <em>orderedparams=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#create_likelihood_function_multimk_mods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.create_likelihood_function_multimk_mods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a likelihood function for testing the parameter values of user-
+specified models</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.create_mkmr_ar">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">create_mkmr_ar</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>nregime</em>, <em>findmin=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#create_mkmr_ar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.create_mkmr_ar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create preallocated arrays. For use in mk function</p>
+<p>Nodelist = edgelist of nodes in postorder sequence</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.create_mkmr_mb_ar">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">create_mkmr_mb_ar</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>nregime</em>, <em>findmin=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#create_mkmr_mb_ar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.create_mkmr_mb_ar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preallocated arrays for midbranch mk_mr</p>
+<p>Create preallocated arrays. For use in mk_mr midbranch function</p>
+<p>Nodelist = edgelist of nodes in postorder sequence</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.fill_model_mr_Q">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">fill_model_mr_Q</code><span class="sig-paren">(</span><em>Qparams</em>, <em>mods</em>, <em>Q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#fill_model_mr_Q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.fill_model_mr_Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill a Q-matrix with Qparams corresponding to the model.</p>
+<p>Individual Q matrices are filled rowwise</p>
+<p>Function alters Q in place</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.inds_from_switchpoint_cython">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">inds_from_switchpoint_cython</code><span class="sig-paren">(</span><em>tree</em>, <em>switches_ni</em>, <em>ar</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#inds_from_switchpoint_cython"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.inds_from_switchpoint_cython" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.lf_mk_mr_midbranch">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">lf_mk_mr_midbranch</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>Qtype</em>, <em>nregime</em>, <em>pi=u'Equal'</em>, <em>findmin=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#lf_mk_mr_midbranch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.lf_mk_mr_midbranch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.lf_mk_mr_midbranch_mods">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">lf_mk_mr_midbranch_mods</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>mods</em>, <em>pi=u'Equal'</em>, <em>findmin=True</em>, <em>orderedparams=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#lf_mk_mr_midbranch_mods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.lf_mk_mr_midbranch_mods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a likelihood function for testing the parameter values of user-
+specified models with switchpoints allowed in the middle of branches</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.locs_from_switchpoint">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">locs_from_switchpoint</code><span class="sig-paren">(</span><em>tree</em>, <em>switches</em>, <em>locs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#locs_from_switchpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.locs_from_switchpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a tree and a list of nodes to be switchpoints, return an
+array of all node indices in one regime vs the other</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tree</strong> (<a class="reference internal" href="ivy.tree.html#ivy.tree.Node" title="ivy.tree.Node"><em>Node</em></a>) &#8211; Root node of tree</li>
+<li><strong>switches</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; List of internal nodes to act as switchpoints.
+Switchpoint nodes are part of their own regimes.</li>
+<li><strong>locs</strong> (<em>np.array</em>) &#8211; Optional pre-allocated array to store output.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array of indices of all nodes associated with each switchpoint, plus
+all nodes &#8220;outside&#8221; the switches in the last list</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.make_modelorder_stoch">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">make_modelorder_stoch</code><span class="sig-paren">(</span><em>mods</em>, <em>name='modorder'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#make_modelorder_stoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.make_modelorder_stoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.make_switchpoint_stoch">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">make_switchpoint_stoch</code><span class="sig-paren">(</span><em>seg_map</em>, <em>name='switch'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#make_switchpoint_stoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.make_switchpoint_stoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.mk_mr_midbranch">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">mk_mr_midbranch</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>Qs</em>, <em>switchpoint</em>, <em>pi=u'Equal'</em>, <em>returnPi=False</em>, <em>ar=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#mk_mr_midbranch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.mk_mr_midbranch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate likelhiood of mk model with BAMM-like multiple regimes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tree</strong> (<a class="reference internal" href="ivy.tree.html#ivy.tree.Node" title="ivy.tree.Node"><em>Node</em></a>) &#8211; Root node of a tree. All branch lengths must be
+greater than 0 (except root)</li>
+<li><strong>chars</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; <p>Dict mapping character states to tip labels.
+Character states should be coded 0,1,2...</p>
+<p>Can also be a list with tip states in preorder sequence</p>
+</li>
+<li><strong>Qs</strong> (<em>np.array</em>) &#8211; Array of instantaneous rate matrices</li>
+<li><strong>locs</strong> (<em>np.array</em>) &#8211; Array of the same length as Qs containing the
+node indices that correspond to each Q matrix</li>
+<li><strong>p</strong> (<em>np.array</em>) &#8211; Optional pre-allocated p matrix</li>
+<li><strong>pi</strong> (<em>str or np.array</em>) &#8211; <p>Option to weight the root node by given values.
+Either a string containing the method or an array
+of weights. Weights should be given in order.</p>
+<p>Accepted methods of weighting root:</p>
+<p>Equal: flat prior
+Equilibrium: Prior equal to stationary distribution</p>
+<blockquote>
+<div>of Q matrix</div></blockquote>
+<dl class="docutils">
+<dt>Fitzjohn: Root states weighted by how well they</dt>
+<dd>explain the data at the tips.</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Log-likelihood of tree/characters given the Q matrices.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(float)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.mk_multi_bayes">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">mk_multi_bayes</code><span class="sig-paren">(</span><em>tree</em>, <em>chars</em>, <em>nregime</em>, <em>qidx</em>, <em>pi=u'Equal'</em>, <em>seglen=0.02</em>, <em>stepsize=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#mk_multi_bayes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.mk_multi_bayes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Bayesian multi-mk model. User specifies which regime models
+to use and the Bayesian model finds the switchpoints.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tree</strong> (<a class="reference internal" href="ivy.tree.html#ivy.tree.Node" title="ivy.tree.Node"><em>Node</em></a>) &#8211; Root node of tree.</li>
+<li><strong>chars</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Dict mapping tip labels to discrete character
+states. Character states must be in the form of [0,1,2...]</li>
+<li><strong>regime</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of distinct regimes to test. Set to
+1 for an Mk model, set to greater than 1 for a multi-regime Mk model.</li>
+<li><strong>qidx</strong> (<em>np.array</em>) &#8211; <p>Index specifying the model to test</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>columns:</dt>
+<dd>0, 1, 2 - index axes of q
+3 - index of params</dd>
+</dl>
+<p>This scheme allows flexible specification of models. E.g.:
+Symmetric mk2:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>params = [0.2]; qidx = [[0,0,1,0],</dt>
+<dd>[0,1,0,0]]</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Asymmetric mk2:</dt>
+<dd><dl class="first last docutils">
+<dt>params = [0.2,0.6]; qidx = [[0,0,1,0],</dt>
+<dd>[0,1,0,1]]</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The qidx corresponding to the first q matrix (first column 0)
+is always the root regime</p>
+</div>
+</li>
+<li><strong>pi</strong> (<em>str or np.array</em>) &#8211; <p>Option to weight the root node by given values.
+Either a string containing the method or an array
+of weights. Weights should be given in order.</p>
+<p>Accepted methods of weighting root:</p>
+<p>Equal: flat prior
+Equilibrium: Prior equal to stationary distribution</p>
+<blockquote>
+<div>of Q matrix</div></blockquote>
+<dl class="docutils">
+<dt>Fitzjohn: Root states weighted by how well they</dt>
+<dd>explain the data at the tips.</dd>
+</dl>
+</li>
+<li><strong>seglen</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Size of segments to break tree into. The smaller this
+value, the more &#8220;fine-grained&#8221; the analysis will be. Optional,
+defaults to 2% of the root-to-tip length.</li>
+<li><strong>stepsize</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Maximum size of steps for switchpoints to take.
+Optional, defaults to 5% of root-to-tip length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.random_tree_location">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">random_tree_location</code><span class="sig-paren">(</span><em>seg_map</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#random_tree_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.random_tree_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select random location on tree with uniform probability</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">node and float, which represents the how far along the branch to
+the parent node the switch occurs on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.round_step_size">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">round_step_size</code><span class="sig-paren">(</span><em>step_size</em>, <em>seg_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#round_step_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.round_step_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round step_size to the nearest segment</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ivy.chars.mk_mr.tree_map">
+<code class="descclassname">ivy.chars.mk_mr.</code><code class="descname">tree_map</code><span class="sig-paren">(</span><em>tree</em>, <em>seglen=0.02</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ivy/chars/mk_mr.html#tree_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ivy.chars.mk_mr.tree_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a map of the tree cut into segments of size (seglen*root_to_tip_length)</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ivy.chars.mk.html"
+                        title="previous chapter">ivy.chars.mk module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ivy.chars.recon.html"
+                        title="next chapter">ivy.chars.recon module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ivy.chars.mk_mr.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ivy.chars.recon.html" title="ivy.chars.recon module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ivy.chars.mk.html" title="ivy.chars.mk module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ivy 0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >ivy</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="ivy.html" >ivy package</a> &raquo;</li>
+          <li class="nav-item nav-item-3"><a href="ivy.chars.html" >ivy.chars package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, RR, CZ.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
