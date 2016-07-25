@@ -200,6 +200,8 @@ and the weighting at the root node.
 
 Let's take a look at the results
 
+.. sourcecode:: ipython
+
     In [*]: print mk_results["Q"]
     [[-0.01246449  0.01246449]
      [ 0.09898439 -0.09898439]]
@@ -210,11 +212,15 @@ where i is the row and j is the column. Recall that in this dataset, character
 rate from woody to herbacious is higher than the transition from
 herbacious to woody.
 
+.. sourcecode:: ipython
+
     In [*]: print mk_results["Log-likelihood"]
     -11.3009106093
 
 Next is the log-likelihood. This is the log-likelihood of the data using
 the fitted model
+
+.. sourcecode:: ipython
 
     In [*]: print mk_results["pi"]
     {0: 0.088591248260230959, 1: 0.9114087517397691}

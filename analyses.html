@@ -211,25 +211,26 @@ and the weighting at the root node.</p>
 </pre></div>
 </div>
 <p>Let&#8217;s take a look at the results</p>
-<blockquote>
-<div><p>In [39]: print mk_results[&#8220;Q&#8221;]
-[[-0.01246449  0.01246449]</p>
-<blockquote>
-<div>[ 0.09898439 -0.09898439]]</div></blockquote>
-</div></blockquote>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">39</span><span class="p">]:</span> <span class="k">print</span> <span class="n">mk_results</span><span class="p">[</span><span class="s">&quot;Q&quot;</span><span class="p">]</span>
+<span class="p">[[</span><span class="o">-</span><span class="mf">0.01246449</span>  <span class="mf">0.01246449</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mf">0.09898439</span> <span class="o">-</span><span class="mf">0.09898439</span><span class="p">]]</span>
+</pre></div>
+</div>
 <p>First is the Q matrix. The fitted Q matrix shows the transition rate from i-&gt;j,
 where i is the row and j is the column. Recall that in this dataset, character
 0 corresponds to herbacious and 1 to woody. We can see that the transition
 rate from woody to herbacious is higher than the transition from
 herbacious to woody.</p>
-<blockquote>
-<div>In [40]: print mk_results[&#8220;Log-likelihood&#8221;]
--11.3009106093</div></blockquote>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">40</span><span class="p">]:</span> <span class="k">print</span> <span class="n">mk_results</span><span class="p">[</span><span class="s">&quot;Log-likelihood&quot;</span><span class="p">]</span>
+<span class="o">-</span><span class="mf">11.3009106093</span>
+</pre></div>
+</div>
 <p>Next is the log-likelihood. This is the log-likelihood of the data using
 the fitted model</p>
-<blockquote>
-<div>In [41]: print mk_results[&#8220;pi&#8221;]
-{0: 0.088591248260230959, 1: 0.9114087517397691}</div></blockquote>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">41</span><span class="p">]:</span> <span class="k">print</span> <span class="n">mk_results</span><span class="p">[</span><span class="s">&quot;pi&quot;</span><span class="p">]</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.088591248260230959</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.9114087517397691</span><span class="p">}</span>
+</pre></div>
+</div>
 <p>Finally we have pi, the weighting at the root. We can see that there is
 higher weighting for the root being in state 1 (woody).</p>
 </div>
