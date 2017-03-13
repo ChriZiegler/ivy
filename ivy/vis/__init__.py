@@ -1,4 +1,6 @@
-from . import treevis, alignment, colors, symbols, hardcopy
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from . import treevis, alignment
 TreeFigure = treevis.TreeFigure
 MultiTreeFigure = treevis.MultiTreeFigure
 AlignmentFigure = alignment.AlignmentFigure

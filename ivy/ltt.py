@@ -1,15 +1,18 @@
 """
 Compute lineages through time
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import numpy
 
-# RR: Should results be set to None and then defined in the function to avoid
-# problems with mutable defaults in functions? -CZ
-def traverse(node, t=0, results=[]):
+
+def traverse(node, t=0, results=None):
     """
     Recursively traverse the tree and collect information about when
     nodes split and how many lineages are added by its splitting.
     """
+    if results is None:
+        results = []
     if node.children:
         ## if not node.label:
         ##     node.label = str(node.id)
@@ -38,12 +41,12 @@ def ltt(node):
     return times, diversity.cumsum()
 
 def test():
-    import newick, ascii
+    from . import newick, ascii
     n = newick.parse("(((a:1,b:2):3,(c:3,d:1):1,(e:0.5,f:3):2.5):1,g:4);")
     v = ltt(n)
-    print ascii.render(n, scaled=1)
+    print(ascii.render(n, scaled=1))
     for t, n in v:
-        print t, n
+        print(t, n)
 
 if __name__ == "__main__":
     test()

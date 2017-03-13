@@ -1,6 +1,8 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import itertools
 from collections import defaultdict
-import newick
+import ivy.newick
 
 class Newick(object):
     """
@@ -22,7 +24,7 @@ class Newick(object):
         self.newick = parse_results.newick
         if ttable: self.ttable = ttable
 
-    def parse(self, newick=newick):
+    def parse(self):
         assert self.newick
         self.root = newick.parse(
             self.newick, ttable=self.ttable, treename=self.name
@@ -36,7 +38,7 @@ def fetchaln(fname):
     return n
 
 def split_blocks(infile):
-    from cStringIO import StringIO
+    from io import StringIO
     dropwhile = itertools.dropwhile; takewhile = itertools.takewhile
     blocks = []
     not_begin = lambda s: not s.lower().startswith("begin")
@@ -63,7 +65,7 @@ def parse_treesblock(infile):
             comment.setResultsName("tree_comment") +
             Suppress("=") +
             comment.setResultsName("root_comment") +
-            newick.setResultsName("newick"))
+            setResultsName("newick"))
     ## treesblock = Group(beginblock +
     ##                    Optional(ttable.setResultsName("ttable")) +
     ##                    Group(OneOrMore(tree)) +
@@ -86,7 +88,7 @@ def parse_treesblock(infile):
         except StopIteration: break
         if s.lower() == "translate":
             ttable = parse_ttable(infile)
-            print "ttable: %s" % len(ttable)
+            print("ttable: %s" % len(ttable))
         else:
             match = tree.parseString(s)
             yield Newick(match, ttable)

@@ -4,7 +4,7 @@ import numpy as np
 from ivy.chars import bayesian_models
 import pymc
 import matplotlib.pyplot as plt
-from ivy.chars.hrm import _create_hrmnodelist
+from ivy.chars.hrm import create_hrmnodelist
 from ivy.chars.hrm import *
 
 tree = ivy.tree.read("support/hrm_300tips.newick")
@@ -37,7 +37,7 @@ nregime = 2
 # for i in ["parA", "parB", "parC"]:
 #     print np.percentile(outMC.trace(i)[:], [2.5, 50, 97.5])
 # # True values are 0.01, 0.1, and 0.6
-Q = ivy.chars.discrete.fill_Q_matrix(2,2, [0.0,1.0,0.00,1.0,1.0,5.5,1.0,5.5])
+Q = ivy.chars.discrete.fill_Q_matrix(2,2, [0.0,1.0,0.00,1.0,1.0,5.5,1.0,5.5], "ARD")
 
 hrm_back_mk(tree, chars, Q, nregime)
 
@@ -191,16 +191,117 @@ returnPi=False
 
 
 
+# Fit HRM with nonlinear optimizer
+tree
+chars
+fast = 0.5
+slow = 0.3
+br = 0.05
+Q = fill_Q_matrix(2,2,[fast, slow], [br], "Simple")
+
+
+f = create_likelihood_function_hrm_mk_MLE(tree, chars, 2, "Simple", pi="Equal")
+
+x0 = [0.1,0.1,0.1]
+cons = ({"type":"ineq", "fun":lambda x: x[1] - x[2]},
+        {"type":"ineq", "fun":lambda x: x[1] - x[0]},
+        {"type":"ineq", "fun":lambda x: x[0]},
+        {"type":"ineq", "fun":lambda x: x[1]},
+        {"type":"ineq", "fun":lambda x: x[2]})
+
+optim = minimize(f, x0, method="COBYLA",
+                  constraints = cons)
 
 
 
 
+f = create_likelihood_function_hrm_mk_MLE(tree, chars, 2, "ARD", pi="Equal")
+x0 = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
+cons = ({"type":"ineq", "fun":lambda x: x[7] - x[2]},
+        {"type":"ineq", "fun":lambda x: x[0]},
+        {"type":"ineq", "fun":lambda x: x[1]},
+        {"type":"ineq", "fun":lambda x: x[2]},
+        {"type":"ineq", "fun":lambda x: x[3]},
+        {"type":"ineq", "fun":lambda x: x[4]},
+        {"type":"ineq", "fun":lambda x: x[5]},
+        {"type":"ineq", "fun":lambda x: x[6]},
+        {"type":"ineq", "fun":lambda x: x[7]})
+optim = minimize(f, x0, method="COBYLA",
+                  constraints = cons)
+# Compare to corHMM
+import ivy
+from ivy.chars import discrete
+import numpy as np
+from ivy.chars import bayesian_models
+import pymc
+import matplotlib.pyplot as plt
+from ivy.chars.hrm import *
+from ivy.chars import hrm
+
+
+tree = ivy.tree.read("/home/cziegler/src/christie-master/ivy/ivy/tests/support/hrm_600tips.newick")
+chars = [0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,
+0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1,
+1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0,
+0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0,
+0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1,
+1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0]
+
+f = create_likelihood_function_hrm_mk_MLE(tree, chars, 2, "ARD", pi="Equal")
+x0 = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
+cons = ({"type":"ineq", "fun":lambda x: x[3] - x[1]},
+        {"type":"ineq", "fun":lambda x: x[0]},
+        {"type":"ineq", "fun":lambda x: x[1]},
+        {"type":"ineq", "fun":lambda x: x[2]},
+        {"type":"ineq", "fun":lambda x: x[3]},
+        {"type":"ineq", "fun":lambda x: x[4]},
+        {"type":"ineq", "fun":lambda x: x[5]},
+        {"type":"ineq", "fun":lambda x: x[6]},
+        {"type":"ineq", "fun":lambda x: x[7]})
+optim = minimize(f, x0, method="COBYLA",
+                  constraints = cons, options = {"maxiter":1e6})
 
 
 
 
+###########################
+# Compare to corhmm
+###########################
+
+t = ivy.tree.read("(((A:1,B:1)E:1,C:2)F:1,D:3)R;")
+c = [1,1,0,0]
+
+
+Q = np.array([[-0.06 ,  0.05 ,  0.01 ,  0.   ],
+       [ 0.01 , -0.02,  0.   ,  0.01],
+       [ 0.01,  0.   , -0.71,  0.7  ],
+       [ 0.   ,  0.01 ,  0.5  , -0.51 ]])
+ivy.chars.hrm.hrm_mk(t, c, Q, 2, pi="Equal")
 
 
 
-cProfile.run("l(Qparams)")
-cProfile.run("l_single(Qparams)")
+corHMMout = [1.2457e-02,3.7156e-02,.461541, 4.400149e-01, 2.061154e-09, 0.02843, 0.0175, 2.0611e-09]
+ivyout = [ 0.00003,  0.02647,  0.17408,  0.21457,  0.10699,  0.10112, 0.09057,  0.09598]

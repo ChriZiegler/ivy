@@ -1,5 +1,8 @@
 from distutils.core import setup, Extension
 import datetime
+from distutils.command.build_py import build_py
+from distutils.command.build_scripts import build_scripts
+import subprocess
 
 
 try:
@@ -11,30 +14,28 @@ else:
 
 version = datetime.date.today().isoformat().replace("-","")
 #version = "0.2" # 2010-12-09
-
-
-
+import sys
+import os
 
 # Cython extensions
 
-cmdclass = { }
+cmdclass =  {'build_py': build_py,
+             'build_scripts': build_scripts
+             }
 ext_modules = [ ]
 
-use_cython = False
-#if use_cython:
-#    ext_modules += [
-#        Extension("ivy.chars.expokit.cyexpokit", [ "ivy/chars/expokit/cyexpokit.pyx" ]),
-#    ]
-#    cmdclass.update({ 'build_ext': build_ext })
-#else:
-#    ext_modules += [
-#        Extension("ivy.chars.expokit.cyexpokit", [ "ivy/chars/expokit/cyexpokit.c" ])
-#    ]
-
-
+if use_cython:
+   ext_modules += [
+       Extension("ivy.chars.expokit.cyexpokit", [ "ivy/chars/expokit/cyexpokit.pyx" ]),
+   ]
+   cmdclass.update({ 'build_ext': build_ext })
+else:
+   ext_modules += [
+       Extension("ivy.chars.expokit.cyexpokit", [ "ivy/chars/expokit/cyexpokit.c" ])
+   ]
 
 packages = [
-    "ivy", "ivy.vis", "ivy.chars", "ivy.chars.expokit", "ivy.sim"
+    "ivy", "ivy.vis", "ivy.chars", "ivy.chars.expokit", "ivy.sim", "ivy.chars.cy_tree","ivy.chars.sse"
     ]
 #packages=find_packages(exclude=["contrib","db"])
 
@@ -45,7 +46,6 @@ desc = "An interactive visual shell for phylogenetics"
 package_data = {
     '': ["*.data", "*.txt", "*.nex", "*"]
     }
-
 setup(name="ivy-phylo",
       version=version,
       description=desc,

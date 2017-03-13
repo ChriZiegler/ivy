@@ -3,10 +3,11 @@
 """
 Adds to the interactive IPython/pylab environment
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sys, os, re
 import ivy
 import ivy.vis
-from ivy.vis import symbols
 
 def readtree(data, *args, **kwargs): return ivy.tree.read(data, *args, **kwargs)
 
@@ -19,7 +20,7 @@ def treefig(*args, **kwargs):
     else:
         fig = MultiTreeFigure(**kwargs)
         for arg in args:
-            print arg
+            print(arg)
             fig.add(arg)
     fig.show()
     return fig
@@ -44,7 +45,7 @@ def __maketree(self, s):
         ##     "(Try dragging one into the terminal):\n"
         ##     ])
         msg = "Enter the name of a tree file or a newick string:\n"
-        fname = raw_input(msg).strip()
+        fname = input(msg).strip()
 
     quotes = ["'", '"']
     if fname and fname[0] in quotes:
@@ -57,11 +58,11 @@ def __maketree(self, s):
             ## IPython.ipapi.get().to_user_ns({treename:root})
             cmd = "%s = ivy.tree.read('%s')" % (treename, fname)
             get_ipython().ex(cmd)
-            print "Tree parsed and assigned to variable '%s'" % treename
+            print("Tree parsed and assigned to variable '%s'" % treename)
         except:
-            print "Unable to parse tree file '%s'" % fname
+            print("Unable to parse tree file '%s'" % fname)
     else:
-        print "Cancelled"
+        print("Cancelled")
 
 def __node_completer(self, event):
     symbol = event.symbol
@@ -110,7 +111,7 @@ try:
             )
 
 except:
-    print sys.exc_info()[0]
+    print(sys.exc_info()[0])
     sys.stderr.write("Magic commands and completers requires IPython >= 0.11\n")
 
 ## if __name__ == "__main__":

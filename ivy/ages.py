@@ -3,7 +3,7 @@ Calculate node ages from branch lengths.
 
 The function of interest is `ages2lengths`
 """
-
+from __future__ import absolute_import, division, print_function, unicode_literals
 def ages2lengths(node, node_ages, results={}):
     """
     Convert node ages to branch lengths
@@ -48,7 +48,6 @@ def min_ages(node, leaf_ages, results={}):
 def smooth(node, node_ages, results={}):
     """
     adjust ages of internal nodes by smoothing
-    RR: I don't actually know what this function does -CZ
     """
     if node.parent:
         parent_age = node_ages[node.parent]
@@ -66,7 +65,7 @@ def smooth(node, node_ages, results={}):
     return results
 
 if __name__ == "__main__":
-    import newick, ascii
+    from . import newick, ascii
 
     s = "((((a,b),(c,d),(e,f)),g),h);"
     root = newick.parse(s)
@@ -86,6 +85,6 @@ if __name__ == "__main__":
     d = ma
     for i in range(10):
         d = smooth(root, d)
-    for node, val in ages2lengths(root, d).items():
+    for node, val in list(ages2lengths(root, d).items()):
         node.length = val
-    print ascii.render(root, scaled=1)
+    print(ascii.render(root, scaled=1))

@@ -20,19 +20,21 @@ Useful: dendropy, biopython, etc.
 ## You should have received a copy of the GNU General Public License
 ## along with this program. If not, see
 ## <http://www.gnu.org/licenses/>.
-
-import tree, layout, contrasts, ages
-import bipart, genbank, nexus, newick, storage
+from __future__ import absolute_import, division, print_function, unicode_literals
+from . import tree, layout, contrasts, ages
+from . import bipart, genbank, nexus, newick, storage
 #import nodearray, data
-import treebase
+from . import treebase
+#import gtk
+#gtk.set_interactive(False)
 #import db
 #import contrib
 try:
-    import ltt as _ltt
+    from . import ltt as _ltt
     ltt = _ltt.ltt
 except ImportError:
     pass
 
-import chars, align, sequtil, sim
+from . import chars, align, sequtil, sim, vis
 ## try: import vis
 ## except RuntimeError: pass

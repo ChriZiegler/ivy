@@ -4,11 +4,15 @@ Parse newick strings.
 The function of interest is `parse`, which returns the root node of
 the parsed tree.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import string, sys, re, shlex, types, itertools
 import numpy
-import nexus
-from cStringIO import StringIO
+import ivy.nexus
+from io import StringIO
 from pprint import pprint
+
+
 
 ## def read(s):
 ##     try:
@@ -68,9 +72,14 @@ def parse(data, ttable=None, treename=None):
     Returns:
         Node: The root node.
     """
-    from tree import Node
+    from .tree import Node
 
-    if type(data) in types.StringTypes:
+    try:
+        StringTypes = types.StringTypes # Python 2
+    except AttributeError: # Python 3
+        StringTypes = [str]
+
+    if type(data) in StringTypes:
         data = StringIO(data)
 
     start_pos = data.tell()
@@ -103,11 +112,13 @@ def parse(data, ttable=None, treename=None):
             newnode.ii = ii; ii += 1
             newnode.treename = treename
             if node:
-                if node.children: newnode.left = node.children[-1].right+1
-                else: newnode.left = node.left+1
-                node.add_child(newnode)
+                if node.children:
+                    newnode.left = node.children[-1].right+1
+                else:
+                    newnode.left = node.left+1
+                node.add_child(newnode, reindex=False)
             else:
-                newnode.left = 1; newnode.right = 2
+                newnode.left = 1
             newnode.right = newnode.left+1
             node = newnode
 
@@ -133,11 +144,10 @@ def parse(data, ttable=None, treename=None):
             if not (token == ''):
                 try: brlen = float(token)
                 except ValueError:
-                    raise ValueError, ("invalid literal for branch length, "
+                    raise ValueError("invalid literal for branch length, "
                                        "'%s'" % token)
             else:
-                raise 'NewickError', \
-                      'unexpected end-of-file (expecting branch length)'
+                raise ValueError('unexpected end-of-file (expecting branch length)')
 
             node.length = brlen
         # comment
@@ -147,7 +157,6 @@ def parse(data, ttable=None, treename=None):
                 # metadata
                 meta = META.findall(node.comment[1:])
                 if meta:
-                    node.meta = {}
                     for k, v in meta:
                         v = eval(v.replace('{','(').replace('}',')'))
                         node.meta[k] = v
@@ -169,11 +178,13 @@ def parse(data, ttable=None, treename=None):
                 newnode.label = "_".join(token.split()).replace("'", "")
                 newnode.isleaf = True
                 newnode.li = li; li += 1
-                if node.children: newnode.left = node.children[-1].right+1
-                else: newnode.left = node.left+1
+                if node.children:
+                    newnode.left = node.children[-1].right+1
+                else:
+                    newnode.left = node.left+1
                 newnode.right = newnode.left+1
                 newnode.treename = treename
-                node.add_child(newnode)
+                node.add_child(newnode, reindex=False)
                 node = newnode
             else: # label
                 if ttable:
@@ -255,7 +266,7 @@ def parse_ampersand_comment(s):
             try: v = float(v)
             except ValueError: pass
         else:
-            try: v = map(float, v.asList())
+            try: v = list(map(float, v.asList()))
             except ValueError: pass
         d.append((x.key, v))
     return d
@@ -307,7 +318,7 @@ def nexus_iter(infile):
     f = itertools.takewhile(not_end, itertools.dropwhile(not_begin, infile))
     s = f.next().strip().lower()
     if s != "begin trees;":
-        print sys.stderr, "Expecting 'begin trees;', got %s" % s
+        print(sys.stderr, "Expecting 'begin trees;', got %s" % s)
         raise StopIteration
     ttable = {}
     while True:
@@ -316,7 +327,7 @@ def nexus_iter(infile):
         if not s: continue
         if s.lower() == "translate":
             ttable = parse_ttable(f)
-            print "ttable: %s" % len(ttable)
+            print("ttable: %s" % len(ttable))
         elif s.split()[0].lower()=='tree':
             match = tree.parseString(s)
             yield nexus.Newick(match, ttable)
@@ -335,5 +346,5 @@ def test_parse_comment():
          "R", "lnP=-154.27154502342688,lnP=-24657.14341301901",
          'states="T-lateral"')
     for s in v:
-        print "input:", s
-        print dict(parse_ampersand_comment(s))
+        print("input:", s)
+        print(dict(parse_ampersand_comment(s)))

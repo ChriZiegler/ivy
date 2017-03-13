@@ -3,6 +3,8 @@ interactive viewers for trees, etc. using matplotlib
 
 Re-written to have a layer-based API
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sys, time, bisect, math, types, os, operator, functools
 from collections import defaultdict, OrderedDict
 from itertools import chain
@@ -35,8 +37,8 @@ from matplotlib._png import read_png
 from matplotlib.ticker import MaxNLocator, FuncFormatter, NullLocator
 from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-from ivy.vis import symbols, colors
-from ivy.vis import hardcopy2 as HC
+from ivy.vis import colors
+from ivy.vis import hardcopy as HC
 from ivy.vis import events, layers
 try:
     import Image
@@ -114,7 +116,7 @@ class TreeFigure(object):
             root = tree.read(data)
         self.root = root
         if not self.root:
-            raise IOError, "cannot coerce data into tree.Node"
+            raise IOError("cannot coerce data into tree.Node")
         self.name = self.name or root.treename
         pars = SubplotParams(
             left=0, right=1, bottom=0.05, top=1, wspace=0.01
@@ -229,7 +231,7 @@ class TreeFigure(object):
             if e.mouseevent.button==1:
                 s = e.artist.get_text()
                 clipboard.copy(s)
-                print s
+                print(s)
                 sys.stdout.flush()
         except:
             pass
@@ -276,7 +278,7 @@ class TreeFigure(object):
         if not keeptemp:
             self.layers.pop("temp", None)
 
-        for lay in self.layers.keys():
+        for lay in list(self.layers.keys()):
             if self.layers[lay].keywords["vis"]:
                 self.layers[lay]()
             matplotlib.pyplot.draw()
@@ -285,7 +287,7 @@ class TreeFigure(object):
             self.overview.redraw()
             if not keeptemp:
                 self.ovlayers.pop("temp", None)
-            for lay in self.ovlayers.keys():
+            for lay in list(self.ovlayers.keys()):
                 self.ovlayers[lay]()
                 matplotlib.pyplot.draw()
         try: self.tree.draw_labels()
@@ -378,13 +380,13 @@ class TreeFigure(object):
         - Dataplot
         - Decorations
 
-        If *kwargs* contains
-        the key-value pair ('store', *name*), the layer function
-        is stored in self.layers and called upon every redraw
 
         Args:
             func (function): Function that takes a TreePlot (self.tree)
               as input and returns (and draws) an Artist
+        Keyword Args:
+            store (str): Name of layer. If given, the layer is stored in
+              self.layers and called upon every redraw
 
         """
         self.redraw()
@@ -395,7 +397,7 @@ class TreeFigure(object):
         func(self.tree, *args, **kwargs)
         self.layers[name]=functools.partial(func, self.tree,
                                             vis=vis, *args, **kwargs)
-        if ov and self.overview_width > 0.001: # Hackish way to check if overview is visible. Maybe should change
+        if ov and self.overview_width > 0.001: # Hackish way to check if overview is on
             self.ovlayers[name]=functools.partial(func, self.overview,
                                                   vis=vis, *args, **kwargs)
             func(self.overview, *args, **kwargs)
@@ -426,12 +428,10 @@ class TreeFigure(object):
         else:
             vis = val
             # Functools allows previously-defined arguments to be overwritten
-        self.layers[layername] = functools.partial(self.layers[layername],
-                                                   vis = vis)
+        self.layers[layername].keywords["vis"] = vis
         if self.overview:
             try:
-                self.ovlayers[layername] = functools.partial(
-                                            self.ovlayers[layername], vis = vis)
+                self.ovlayers[layername].keywords["vis"] = vis
             except: pass
         self.redraw(keeptemp=True)
     def reorder_layers(self, neworder):
@@ -481,7 +481,6 @@ class TreeFigure(object):
             vis (bool): Whether or not the object is visible. Defaults to true
         """
         self.add_layer(layers.add_highlight, x, *args, **kwargs)
-
     def cbar(self, nodes, *args, **kwargs):
         """
         Convenience function for adding clade bar along y axis
@@ -508,27 +507,23 @@ class TreeFigure(object):
               of the MRCA of ``nodes``
         """
         self.add_layer(layers.add_cbar, nodes, *args, **kwargs)
-    def tip_chars(self, chars, nodes=None, *args, **kwargs):
+    def tipstates(self, chars, nodes=None,colors=None, *args, **kwargs):
         """
         Convenience function for drawing color-coded circles at tips indicating
         character states.
 
         Args:
-            chars (list): Character states in the form of [0,1, etc.]. should
-              be in the same order as nodes.
+            chars (dict): Dict mapping character states to tip labels.
+              Character states should be coded 0,1,2...
+
+              Can also be a list with tip states in preorder sequence
             nodes (list): List of nodes or node labels. Optional, defaults
               to all tip labels in preorder sequence
             colors (list): List of strs of the same length as the number
               of unique characters. Optional, defaults to tango colorscheme
 
         """
-        if nodes is None:
-            nodes = self.root.leaves()
-        cols = kwargs.pop("colors", None)
-        if not cols:
-            cols = [ _tango.next() for char in set(chars) ]
-        col_list = [ cols[i] for i in chars ]
-        self.add_layer(layers.add_circles, nodes, colors=col_list, size=6, *args, **kwargs)
+        self.add_layer(layers.add_tipstates,chars, nodes, colors=colors, *args, **kwargs)
 
 class Tree(Axes):
     """
@@ -600,7 +595,7 @@ class Tree(Axes):
         x0, x1 = sorted((e0.xdata, e1.xdata))
         y0, y1 = sorted((e0.ydata, e1.ydata))
         add = e0.key == 'shift'
-        for n, c in self.n2c.items():
+        for n, c in list(self.n2c.items()):
             if (x0 < c.x < x1) and (y0 < c.y < y1):
                 s.add(n)
         self.select_nodes(nodes = s, add = add)
@@ -624,7 +619,7 @@ class Tree(Axes):
         xlim = self.get_xlim()
         ylim = self.get_ylim()
         get = self.n2c.get
-        coords = filter(None, [ get(n) for n in self.selected_nodes ])
+        coords = [_f for _f in [ get(n) for n in self.selected_nodes ] if _f]
         x = [ c.x for c in coords ]
         y = [ c.y for c in coords ]
         if x and y:
@@ -662,7 +657,7 @@ class Tree(Axes):
         x0, x1 = sorted((e0.xdata, e1.xdata))
         y0, y1 = sorted((e0.ydata, e1.ydata))
         add = e0.key == 'shift'
-        for n, c in self.n2c.items():
+        for n, c in list(self.n2c.items()):
             if (x0 < c.x < x1) and (y0 < c.y < y1):
                 s.add(n)
         self.select_nodes(nodes = s, add = add)
@@ -871,13 +866,16 @@ class Tree(Axes):
 
 
     def layout(self):
+        """
+        Get coordinates of nodes
+        """
         self.n2c = cartesian(self.root, scaled=self.scaled, yunit=1.0,
                              smooth=self.smooth_xpos)
         self.labels = [ x.label for x in self.root ]
-        for c in self.n2c.values():
+        for c in list(self.n2c.values()):
             c.x += self.xoff; c.y += self.yoff
         sv = sorted([
-            [c.y, c.x, n] for n, c in self.n2c.items()
+            [c.y, c.x, n] for n, c in list(self.n2c.items())
             ])
         self.coords = sv#numpy.array(sv)
 
@@ -944,7 +942,7 @@ class Tree(Axes):
         ypp = self.ypp()
         d = self.clade_dimensions()
         h = {}
-        for n, (x0, x1, y0, y1) in d.items():
+        for n, (x0, x1, y0, y1) in list(d.items()):
             h[n] = (y1-y0)/ypp
         return h
 
@@ -966,7 +964,7 @@ class Tree(Axes):
         self.add_patch(self.branchpatch)
 
     def adjust_xspine(self):
-        v = sorted([ c.x for c in self.n2c.values() ])
+        v = sorted([ c.x for c in list(self.n2c.values()) ])
         try:
             self.spines["bottom"].set_bounds(v[0],v[-1])
         except AttributeError:
@@ -978,7 +976,7 @@ class Tree(Axes):
     def mark_named(self):
         if self._mark_named:
             n2c = self.n2c
-            cv = [ c for n, c in n2c.items() if n.label and (not n.isleaf) ]
+            cv = [ c for n, c in list(n2c.items()) if n.label and (not n.isleaf) ]
             x = [ c.x for c in cv ]
             y = [ c.y for c in cv ]
             if x and y:
@@ -989,7 +987,7 @@ class Tree(Axes):
         trans = td.inverted().transform
         xmax = xmin = ymax = ymin = 0
 
-        v = self.n2c.values()
+        v = list(self.n2c.values())
         ymin = min([ c.y for c in v ])
         ymax = max([ c.y for c in v ])
 
@@ -1029,10 +1027,9 @@ class Tree(Axes):
         return pixelsep
     def draw_labels(self, *args):
         if self.tf.layers["leaflabels"].keywords["vis"]:
-            [ l.set_visible(False) for l in self.node2label.values() ]
+            [ l.set_visible(False) for l in list(self.node2label.values()) ]
             fs = 10
-            leaves = list(filter(lambda x:x[0].isleaf,
-                                 self.get_visible_nodes(labeled_only=True)))
+            leaves = list([x for x in self.get_visible_nodes(labeled_only=True) if x[0].isleaf])
             psep = self.leaf_pixelsep()
             fontsize = min(self.leaf_fontsize, max(psep, 8))
             n2l = self.node2label
@@ -1086,7 +1083,7 @@ class Tree(Axes):
         ## print [ x[0].id for x in nodes ]
             if self.tf.layers["branchlabels"].keywords["vis"]:
                 nodes = self.get_visible_nodes(labeled_only=True)
-                branches = list(filter(lambda x:(not x[0].isleaf), nodes))
+                branches = list([x for x in nodes if (not x[0].isleaf)])
                 n2l = self.node2label
                 for n, x, y in branches:
                     t = n2l[n]
@@ -1111,6 +1108,9 @@ class RadialTree(Tree):
     """
     Matplotlib axes subclass for rendering radial trees
     """
+    def __init__(self,fig,rect,tf=None,*args,**kwargs):
+        Tree.__init__(self,fig,rect,tf,*args,**kwargs)
+        self.axes.axis("equal")
     def layout(self):
         from ..layout_polar import calc_node_positions
         start = self.start if hasattr(self, 'start') else 0
@@ -1119,7 +1119,7 @@ class RadialTree(Tree):
                                        start=start, end=end)
         # Sort by angle for polar coordinates
         sv = sorted([
-            [c.angle,c.y,c.x, n] for n, c in self.n2c.items()
+            [c.angle,c.y,c.x, n] for n, c in list(self.n2c.items())
             ])
         self.coords = [ i[1:] for i in sv ] # We only want coords, not angle
 
@@ -1174,7 +1174,7 @@ class OverviewTree(Tree):
         trans = td.inverted().transform
         xmax = xmin = ymax = ymin = 0
 
-        v = self.n2c.values()
+        v = list(self.n2c.values())
         ymin = min([ c.y for c in v ])
         ymax = max([ c.y for c in v ])
 
@@ -1230,6 +1230,8 @@ class OverviewTree(Tree):
         Tree.redraw_keeptemp(self)
         self.add_overview_rect()
         self.figure.canvas.draw_idle()
+
+# TODO: facing plots
 class MultiTreeFigure(TreeFigure):
     """
     Class for drawing multiple trees in one figure
@@ -1271,7 +1273,7 @@ class MultiTreeFigure(TreeFigure):
         else:
             root = tree.read(data)
         if not root:
-            raise IOError, "cannot coerce data into tree.Node"
+            raise IOError("cannot coerce data into tree.Node")
 
         name = name or root.treename
         self.root.append(root)
@@ -1335,7 +1337,7 @@ class MultiTreeFigure(TreeFigure):
     def picked(self, e):
         try:
             if e.mouseevent.button==1:
-                print e.artist.get_text()
+                print(e.artist.get_text())
                 sys.stdout.flush()
         except:
             pass

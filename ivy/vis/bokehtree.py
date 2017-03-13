@@ -1,6 +1,8 @@
 """
 Viewer for trees using Bokeh
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import bokeh
 import ivy
 import types
@@ -10,7 +12,10 @@ from bokeh.models import Range1d, HoverTool, BoxZoomTool, WheelZoomTool, \
      ResizeTool, ResetTool, PanTool, PreviewSaveTool
 from ivy.layout import cartesian
 
-
+try:
+    StringTypes = types.StringTypes # Python 2
+except AttributeError: # Python 3
+    StringTypes = [str]
 class BokehTree(object):
 	def __init__(self, root, scaled = True, nodelabels = True,
 				 tiplabels = True, showplot = True, hover = False):
@@ -63,9 +68,9 @@ class BokehTree(object):
 		This method calculates the coordinates of the nodes
 		"""
 		self.n2c = cartesian(self.root, scaled=self.scaled, yunit=1.0)
-		for c in self.n2c.values():
+		for c in list(self.n2c.values()):
 			c.x += self.xoff; c.y += self.yoff
-		sv = sorted([[c.y, c.x, n] for n, c in self.n2c.items()])
+		sv = sorted([[c.y, c.x, n] for n, c in list(self.n2c.items())])
 		for i in sv:
 			i[2].yval = i[0]
 			i[2].xval = i[1]
@@ -181,13 +186,13 @@ class BokehTree(object):
 		"""
 		if x:
 			nodes = set()
-			if type(x) in types.StringTypes:
+			if type(x) in StringTypes:
 				nodes = self.root.findall(x)
 			elif isinstance(x, tree.Node):
 				nodes = set(x)
 			else:
 				for n in x:
-					if type(n) in types.StringTypes:
+					if type(n) in StringTypes:
 						found = self.root.findall(n)
 						if found:
 							nodes |= set(found)

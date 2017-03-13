@@ -4,34 +4,26 @@ etc.
 
 ivy does not have a Tree class per se, as most functions operate
 directly on Node objects.
+
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+from collections import defaultdict
 import os, types
-from storage import Storage
-from copy import copy as _copy
-from matrix import vcv
-import newick
-from itertools import izip_longest
 import csv
-import numpy as np
 import itertools
 
-## class Tree(object):
-##     """
-##     A simple Tree class.
-##     """
-##     def __init__(self, data=None, format="newick", name=None, ttable=None):
-##         self.root = None
-##         if data:
-##             self.root = read(data, format, name, ttable)
-##         self.name = name
-##         self.ttable = ttable
 
-##     def __getattribute__(self, a):
-##         r = object.__getattribute__(self, 'root')
-##         try:
-##             return object.__getattribute__(r, a)
-##         except AttributeError:
-##             return object.__getattribute__(self, a)
+from .storage import Storage
+from copy import copy as _copy
+from .matrix import vcv
+import ivy.newick
+import numpy as np
+
+
+try:
+    StringTypes = types.StringTypes # Python 2
+except AttributeError: # Python 3
+    StringTypes = [str]
 
 def traverse(node):
     "recursive preorder iterator based solely on .children attribute"
@@ -54,12 +46,12 @@ class Node(object):
         isleaf (bool): Is the node a leaf.
         label (str): Node label.
         length (float): Branch length from node to parent
-        support: RR: Are these bootstrap support values? -CZ
+        support: Bootstrap support values
         age (float): Age of the node in time units.
         parent (Node): Parent of the ndoe.
         children (list): List of node objects. Children of node
-        nchildren (int): No. of children
-        left: RR: Unsure what left and right mean -CZ
+        nchildren (int): Number of children
+        left: The "left" node
         treename: Name of tree
         comment: Comments for tree
 
@@ -81,11 +73,13 @@ class Node(object):
         self.right = None
         self.treename = ""
         self.comment = ""
-        self.length_comment = ""
-        self.label_comment = ""
         self.apeidx = None
+        self.meta = defaultdict(lambda:None)
+        self.meta["cached"]=False
+        ## self.length_comment = ""
+        ## self.label_comment = ""
         if kwargs:
-            for k, v in kwargs.items():
+            for k, v in list(kwargs.items()):
                 setattr(self, k, v)
         if self.id is None: self.id = id(self)
 
@@ -123,7 +117,7 @@ class Node(object):
             bool: Whether or not the other node is a descendant of self
         """
         otype = type(other)
-        if other and otype in types.StringTypes:
+        if other and otype in StringTypes:
             for x in self:
                 if other == x.label:
                     return True
@@ -136,8 +130,14 @@ class Node(object):
         return False
 
     def __iter__(self):
-        for node in self.iternodes():
-            yield node
+        if not self.meta["cached"]:
+            for node in self.iternodes():
+                yield node
+        else:
+            for node in self.iternodes_cached():
+                yield node
+        # for node in self.iternodes():
+        #     yield node
 
     def __len__(self):
         """
@@ -151,7 +151,7 @@ class Node(object):
             i += 1
         return i
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     def __getitem__(self, x):
@@ -163,56 +163,43 @@ class Node(object):
             Node: Found node(s)
 
         """
+        if self.meta["cached"] and type(x) == int:
+            try:
+                return self.iternodes_cached()[x] # Fast indexing using ni
+            except IndexError:
+                pass
         for n in self:
             if n==x or n.id==x or n.ni == x or (n.label and n.label==x):
                 return n
         raise IndexError(str(x))
 
-    def reindex(self):
+    def reindex(node, n=0, d=0, ni=0, li=0, ii=0,pi=0):
         """
-        Can only assign ni, li, and ii
+        Iteratively attach 'ni',
+        'ii', 'pi', and 'li' attributes to nodes
         """
-        assert self.isroot, "Only the root can be reindexed"
-
         ni = 0
-        li = 0
         ii = 0
-
-        for n in self:
+        li = 0
+        for n in node.iternodes():
             n.ni = ni
             ni += 1
             if n.isleaf:
-                try: # Delete leftover properties that no longer apply
-                    del(n.ii)
-                except:
-                    pass
                 n.li = li
                 li += 1
             else:
-                try:
-                    del(n.li)
-                except:
-                    pass
                 n.ii = ii
                 ii += 1
-    #
-    #     newtree = read(newickstr)
-    #
-    #     vars_to_index = ["pi", "ni", "ii", "li", "back", "next",
-    #                      "right", "left"]
-    #
-    #     for i,n in enumerate(self):
-    #         for var in vars(n):
-    #             if var in vars_to_index:
-    #                 print var
-    #                 n.var = newtree[i].var
+        for n in node.postiter():
+            n.pi = pi
+            pi += 1
 
     def ape_node_idx(self): # For use in phylorate plot
         i = 1
         for lf in self.leaves():
             lf.apeidx = i
             i += 1
-        for n in self.clades():
+        for n in [self]+self.clades():
             n.apeidx = i
             i += 1
 
@@ -237,58 +224,36 @@ class Node(object):
         Returns:
             str: Ascii tree to be shown with print().
         """
-        from ascii import render
+        from .ascii import render
         return render(self, *args, **kwargs)
 
-    def collapse(self, add=False):
+    def collapse(self, add=False, reindex=True):
         """
+        Mutate function
+
         Remove self and collapse children to polytomy
 
         Args:
             add (bool): Whether or not to add self's length to children's
               length.
+            reindex (bool): Whether to recalculate index attributes after mutating
 
         Returns:
             Node: Parent of self
 
         """
         assert self.parent
-        p = self.prune()
+        p = self.prune(reindex=reindex)
         for c in self.children:
-            p.add_child(c)
+            p.add_child(c, reindex=reindex)
             if add and (c.length is not None):
                 c.length += self.length
         self.children = []
-        p.get_root().reindex()
+        if reindex:
+            p.get_root().set_iternode_cache()
+            p.reindex()
         return p
 
-#    def copy_old(self, recurse=False):
-#        """
-#        Return a shallow copy of the node, but not copies of children, parent,
-#        or any attribute that is a Node.
-#
-#        If `recurse` is True, recursively copy child nodes.
-#
-#        Args:
-#            recurse (bool): Whether or not to copy children as well as self.
-#
-#        Returns:
-#            Node: A copy of self.
-#
-#
-#
-#        RR: This function runs rather slowly -CZ
-#        """
-#        newnode = Node()
-#        for attr, value in self.__dict__.items():
-#            if (attr not in ("children", "parent") and
-#                not isinstance(value, Node)):
-#                setattr(newnode, attr, _copy(value))
-#            if recurse:
-#                newnode.children = [
-#                    child.copy(True) for child in self.children
-#                    ]
-#        return newnode
     def copy(self, recurse=True, _par=None):
         """
         Return a shallow copy of self. If recurse = False, do not copy children,
@@ -301,8 +266,10 @@ class Node(object):
             Node: A copy of self.
 
         """
+        for n in self.iternodes():
+            self.cached = False
         newnode = Node()
-        for attr, value in self.__dict__.items():
+        for attr, value in list(self.__dict__.items()):
             if (attr not in ("children", "parent") and
                 not isinstance(value, Node)):
                 setattr(newnode, attr, _copy(value))
@@ -312,9 +279,10 @@ class Node(object):
                 ]
             if _par:
                 newnode.parent = _par
+        for n in self.iternodes():
+            self.cached = True
+        newnode.set_iternode_cache()
         return newnode
-
-
 
     def leafsets(self, d=None, labels=False):
         """return a mapping of nodes to leaf sets (nodes or labels)"""
@@ -356,37 +324,6 @@ class Node(object):
             return seen
         f(self)
         return anc[0]
-
-    ## def mrca(self, *nodes):
-    ##     """
-    ##     Find most recent common ancestor of *nodes*
-    ##     """
-    ##     if len(nodes) == 1:
-    ##         nodes = tuple(nodes[0])
-    ##     if len(nodes) == 1:
-    ##         return nodes[0]
-    ##     ## assert len(nodes) > 1, (
-    ##     ##     "Need more than one node for mrca(), got %s" % nodes
-    ##     ##     )
-    ##     def f(x):
-    ##         if isinstance(x, Node):
-    ##             return x
-    ##         elif type(x) in types.StringTypes:
-    ##             return self.find(x)
-    ##     nodes = map(f, nodes)
-    ##     assert all(filter(lambda x: isinstance(x, Node), nodes))
-
-    ##     #v = [ list(n.rootpath()) for n in nodes if n in self ]
-    ##     v = [ list(x) for x in izip_longest(*[ reversed(list(n.rootpath()))
-    ##                                            for n in nodes if n in self ]) ]
-    ##     if len(v) == 1:
-    ##         return v[0][0]
-    ##     anc = None
-    ##     for x in v:
-    ##         s = set(x)
-    ##         if len(s) == 1: anc = list(s)[0]
-    ##         else: break
-    ##     return anc
 
     def ismono(self, *leaves):
         """
@@ -431,17 +368,26 @@ class Node(object):
                 for c in self.children:
                     c.order_subtrees_by_size(n2s, recurse=True, reverse=reverse)
 
-    def ladderize(self, reverse=False):
+    def ladderize(self, reverse=False, reindex=True):
+        """
+        Mutate function
+        Rotate nodes so tree is ordered by clade size.
+
+        WARNING: May cause strange results with functions that rely on
+          pre- and post- ordering of nodes
+        """
+        assert self.isroot, "Must provide root node to ladderize tree"
         self.order_subtrees_by_size(recurse=True, reverse=reverse)
-        self.reindex()
         return self
 
-    def add_child(self, child):
+    def add_child(self, child, reindex=True):
         """
+        Mutate function
         Add child as child of self
 
         Args:
             child (Node): A node object
+            reindex (bool): Whether to recalculate index attributes after mutating
 
         """
         assert child not in self.children
@@ -449,9 +395,13 @@ class Node(object):
         child.parent = self
         child.isroot = False
         self.nchildren += 1
+        if reindex:
+            self.get_root().set_iternode_cache()
+            self.reindex()
 
-    def bisect_branch(self, distance = 0.5):
+    def bisect_branch(self, distance = 0.5, reindex=True):
         """
+        Mutate function.
         Add new node as parent to self in the middle of branch to parent.
 
         Args:
@@ -459,28 +409,34 @@ class Node(object):
               new node. Defaults to 0.5 (bisection). Higher numbers
               set the new node closer to the parent, lower
               numbers set it closer to child.
+            reindex (bool): Whether to recalculate index attributes after mutating
 
         Returns:
             Node: A new node.
-
         """
         assert self.parent
         assert 0 < distance < 1
-        parent = self.prune()
+        parent = self.prune(reindex=reindex)
         n = Node()
         if self.length:
             n.length = self.length * (1-distance)
             self.length *= distance
-        parent.add_child(n)
-        n.add_child(self)
+        parent.add_child(n, reindex=reindex)
+        n.add_child(self, reindex=reindex)
+        if reindex:
+            self.get_root().set_iternode_cache()
+            self.reindex()
+
         return n
 
-    def remove_child(self, child):
+    def remove_child(self, child, reindex=True):
         """
-        Remove child.
+        Mutate function.
+        Remove child from self.
 
         Args:
             child (Node): A node object that is a child of self
+            reindex (bool): Whether to recalculate index attributes after mutating
 
         """
         assert child in self.children, "node '%s' not child of node '%s'" % (child.label or child.id, self.label or self.id)
@@ -489,6 +445,9 @@ class Node(object):
         self.nchildren -= 1
         if not self.children:
             self.isleaf = True
+        if reindex:
+            self.get_root().set_iternode_cache()
+            self.reindex()
 
     def labeled(self):
         """
@@ -509,9 +468,9 @@ class Node(object):
 
         Returns:
             list: A list of leaves that are true for f (if f is given)
-
         """
-        if f: return [ n for n in self if (n.isleaf and f(n)) ]
+        if f:
+            return [ n for n in self if (n.isleaf and f(n)) ]
         return [ n for n in self if n.isleaf ]
 
     def internals(self, f=None):
@@ -524,9 +483,9 @@ class Node(object):
 
         Returns:
             list: A list of internal nodes that are true for f (if f is given)
-
         """
-        if f: return [ n for n in self if (n.children and f(n)) ]
+        if f:
+            return [ n for n in self if (n.children and f(n)) ]
         return [ n for n in self if n.children ]
 
     def clades(self):
@@ -534,30 +493,45 @@ class Node(object):
         Get internal nodes descended from self
 
         Returns:
-            list: A list of internal nodes descended from self.
-
+            list: A list of internal nodes descended from (and not including) self.
         """
-        return [ n for n in self if not n.isleaf ]
+        return [ n for n in self if (n is not self) and not n.isleaf ]
 
-    def iternodes(self, f=None):
+    def iternodes(self,f=None):
         """
-        Return a generator of nodes descendant from self - including self
-
-        Args:
-            f (function): A function that evaluates to true if called with
-            desired node as the first input. Optional
-
+        List of nodes descendant from self - including self
         Yields:
             Node: Nodes descended from self (including self) in
               preorder sequence
-
         """
-        if (f and f(self)) or (not f):
-            yield self
-        for child in self.children:
-            for n in child.iternodes(f):
+        s = []
+        s.append(self)
+        n = self
+        if f is None:
+            f = lambda x: True
+        while len(s) != 0:
+            n = s.pop()
+            if f(n):
                 yield n
+            for child in reversed(n.children):
+                s.append(child)
+    def set_iternode_cache(self):
+        """
+        Store iteration order for faster access.
+        """
+        for n in self.iternodes():
+            n.meta["iterlist"] = list(n.iternodes())
 
+    def iternodes_cached(self, f=None, force=False):
+        """
+        Cached version of iternodes. Faster, but requires that the tree
+        is static and not being changed.
+        """
+        if f is None:
+            f = lambda x: True
+        if (self.meta["iterlist"] is None) or force:
+            self.set_iternode_cache()
+        return [n for n in self.meta["iterlist"] if f(n)]
     def iterleaves(self):
         """
         Yield leaves descendant from self
@@ -596,7 +570,6 @@ class Node(object):
 
         Returns:
             list: A list of nodes descended from self not including self.
-
         """
         v = v or []
         for child in self.children:
@@ -608,6 +581,7 @@ class Node(object):
             if child.children:
                 child.descendants(order, v, f)
         return v
+
     def drop_tip(self, nodes):
         """
         Return a NEW TREE with the given tips dropped from it. Does not
@@ -619,27 +593,30 @@ class Node(object):
             Node (Node): New root node with tips dropped
         """
         t = self.copy()
+
+        for n in t.iternodes():
+            n.meta["cached"]=False
+
         nodes = [ t[self[x].id] for x in nodes ]
         nodes = sorted(nodes, key=lambda x: x.ni)
         assert all([ x.isleaf for x in nodes ]), "All nodes given must be tips"
         root = t
 
-
         for node in nodes:
-            cp = node.parent
-            cp.remove_child(node)
+            cp = node.parent # current parent
+            cp.remove_child(node, reindex=False)
             if cp.length:
                 node.length += cp.length
-            if len(cp.children) == 1:
+            if len(cp.children) == 1: # If parent is now a "knee"...
                 try:
-                    cp.excise()
-                except AssertionError:
+                    cp.excise(reindex=False) # Remove parent
+                except AssertionError: # If parent was the root, assign new root
                     t.isroot = False
                     root = cp.children[0]
                     root.parent = None
             elif len(cp.children) == 0:
-                cpp = cp.parent
-                cp.parent.remove_child(cp)
+                cpp = cp.parent # current parent's parent
+                cp.parent.remove_child(cp, reindex=False)
                 if cpp.nchildren == 1:
                     try:
                         cpp.excise()
@@ -650,13 +627,16 @@ class Node(object):
                         root.isroot = True
         for n in root.descendants():
             # This removes all knees in the tree. It mimics what ape's
-            # drop.tip function does. Unsure what the behavior
-            # should actually be.
+            # drop.tip function does. Unsure what the behavior for ivy
+            # should be.
             if n.nchildren == 1:
-                n.excise()
+                n.excise(reindex=False)
         root.isroot = True
-        root.reindex()
+        root.set_iternode_cache()
+        for n in root:
+            n.meta["cached"] = True
         return root
+
     def keep_tip(self, nodes):
         """
         Return a NEW TREE containing only the given tips.
@@ -669,7 +649,6 @@ class Node(object):
         nodes = [ self[x] for x in nodes ]
         assert all([ x.isleaf for x in nodes ]), "All nodes given must be tips"
         to_drop = [ l for l in self.leaves() if not l in nodes ]
-
         return self.drop_tip(to_drop)
 
     def get(self, f, *args, **kwargs):
@@ -686,7 +665,7 @@ class Node(object):
         """
         v = self.find(f, *args, **kwargs)
         try:
-            return v.next()
+            return next(v)
         except StopIteration:
             return None
 
@@ -743,7 +722,7 @@ class Node(object):
 
     def find(self, f, *args, **kwargs):
         """
-        Find descendant nodes.
+        Find descendant nodes (generator version)
 
         Args:
             f: Function or a string.  If a string, it is converted to a
@@ -756,7 +735,7 @@ class Node(object):
 
         """
         if not f: return
-        if type(f) in types.StringTypes:
+        if type(f) in StringTypes:
             func = lambda x: (f or None) in (x.label or "")
         else:
             func = f
@@ -765,61 +744,21 @@ class Node(object):
                 yield n
 
     def findall(self, f, *args, **kwargs):
-        """Return a list of found nodes."""
+        """
+        Find descendant nodes (list version)
+
+        Args:
+            f: Function or a string.  If a string, it is converted to a
+              function for finding *f* as a substring in node labels.
+              Otherwise, *f* should evaluate to True if called with a desired
+              node as the first parameter.
+
+        Yields:
+            Node: Found nodes in preorder sequence.
+
+        """
         return list(self.find(f, *args, **kwargs))
 
-    # def is_same_tree(self, tree, check_id=False, verbose=False):
-    #     """
-    #     Test if two trees are the same (same topology, characteristics, labels,
-    #     etc.) Ignores IDs by default.
-    #
-    #     Args:
-    #         tree (Node): Another tree to compare to
-    #         check_id (bool): Whether or not to compare IDs. Defaults to False
-    #         verbose (bool): Whether or not to print a message containing
-    #           the non-matching properties
-    #     Returns:
-    #         bool: Whether or not the trees are the same.
-    #     """
-    #     assert self.isroot and tree.isroot, "Must compare root nodes"
-    #     # Recursively check properties of both trees EXCEPT for IDs and children/parents
-    #     # (IDs are ignored by default and children/parents will be checked
-    #     # during the enumeration of all nodes)
-    #     a_tree = self.copy()
-    #     b_tree = tree.copy()
-    #
-    #     # a_tree.ladderize()
-    #     # b_tree.ladderize()
-    #
-    #     ignoreProps = ["children", "parent", "left", "right", "back","pi","next","treename"]
-    #     if not check_id:
-    #         ignoreProps.append("id")
-    #
-    #     for i,node in enumerate(a_tree):
-    #         for property, value in vars(node).iteritems():
-    #             if property in ignoreProps:
-    #                 pass
-    #             else:
-    #                 if (type(vars(a_tree[i])[property]) != float) or (type(vars(b_tree[i])[property]) != float):
-    #                     try: #Trycatch in case property does not exist in both trees
-    #                         if vars(a_tree[i])[property] != vars(b_tree[i])[property]:
-    #                             if verbose:
-    #                                 print (str(["Nonmatching properties:",
-    #                                     property, str(vars(a_tree[i])[property]),
-    #                                     str(vars(b_tree[i])[property]), a_tree[i], b_tree[i]]))
-    #                             return False
-    #                     except KeyError:
-    #                         if verbose:
-    #                             print "Missing Property", str(property)
-    #                         return False
-    #                 else: # Want to test if floats are close, not identical
-    #                     if not np.isclose(vars(a_tree[i])[property], vars(b_tree[i])[property]):
-    #                         if verbose:
-    #                             print (str(["Nonmatching properties:",
-    #                                 property, str(vars(a_tree[i])[property]),
-    #                                 str(vars(b_tree[i])[property])]))
-    #                         return False
-    #     return True
     def is_same_tree(self, tree):
         """
         Test if two trees are the same (same topology, characteristics, labels,
@@ -845,19 +784,21 @@ class Node(object):
         """
         Two nodes are isomorphic if all of their properties are identical;
         Two leaves with identical properties are isomorphic
-        Two internals are identical if either their child nodes are identical
+        Two internals are identical if their child nodes are identical
         in any order.
 
         """
-        propsToCheck = ["age", "apeidx", "isleaf", "isroot",
-                        "label", "length", "support", "nchildren"]
+
+        propsToCheck = ["label","nchildren"]
+        numericPropsToCheck = ["length"]
 
         for prop in propsToCheck:
-            if (type(getattr(self, prop))) == float and (type(getattr(node, prop)) == float ):
-                if not np.isclose(getattr(self, prop), getattr(node, prop)):
-                    return False
-            else:
-                if getattr(self, prop) != getattr(node, prop):
+            if getattr(self, prop) != getattr(node, prop):
+                return False
+        for prop in numericPropsToCheck:
+            att1 = getattr(self,prop);att2 = getattr(node,prop)
+            if att1 and att2:
+                if not np.isclose(att1, att2):
                     return False
         if self.nchildren == 0 and node.nchildren == 0:
             return True
@@ -868,11 +809,15 @@ class Node(object):
 
         return False
 
-    def prune(self):
+    def prune(self, reindex=True):
         """
+        Mutate function
         Remove self if self is not root.
 
         All descendants of self are also removed
+
+        Args:
+            reindex (bool): Whether to recalculate index attributes after mutating tree.
 
         Returns:
             Node: Parent of self. If parent had only two children,
@@ -881,12 +826,20 @@ class Node(object):
         """
         p = self.parent
         if p:
-            p.remove_child(self)
+            p.remove_child(self, reindex=reindex)
+        if reindex:
+            p.get_root().set_iternode_cache()
+            p.reindex()
         return p
 
-    def excise(self):
+    def excise(self, reindex=True):
         """
+        Mutate function
         For 'knees': remove self from between parent and single child
+
+        Args:
+            reindex (bool): Whether to recalculate index attributes after mutating tree.
+
         """
         assert self.parent
         assert len(self.children)==1
@@ -894,51 +847,36 @@ class Node(object):
         c = self.children[0]
         if c.length is not None and self.length is not None:
             c.length += self.length
-        c.prune()
-        self.prune()
-        p.add_child(c)
+        c.prune(reindex=reindex)
+        self.prune(reindex=reindex)
+        p.add_child(c,reindex=reindex)
+        if reindex:
+            p.get_root().set_iternode_cache()
+            p.reindex()
         return p
 
-    def graft(self, node):
+    def graft(self, node, reindex=True):
         """
+        Mutate function
         Add node as sister to self.
+        Args:
+            node (Node): Node to graft to tree
+            reindex (bool): Whether to recalculate index attributes after mutating tree.
+
         """
         parent = self.parent
-        parent.remove_child(self)
+        parent.remove_child(self, reindex=reindex)
         n = Node()
-        n.add_child(self)
-        n.add_child(node)
-        parent.add_child(n)
-
-    ## def leaf_distances(self, store=None, measure="length"):
-    ##     """
-    ##     for each internal node, calculate the distance to each leaf,
-    ##     measured in branch length or internodes
-    ##     """
-    ##     if store is None:
-    ##         store = {}
-    ##     leaf2len = {}
-    ##     if self.children:
-    ##         for child in self.children:
-    ##             if measure == "length":
-    ##                 dist = child.length
-    ##             elif measure == "nodes":
-    ##                 dist = 1
-    ##             child.leaf_distances(store, measure)
-    ##             if child.isleaf:
-    ##                 leaf2len[child] = dist
-    ##             else:
-    ##                 for k, v in store[child].items():
-    ##                     leaf2len[k] = v + dist
-    ##     else:
-    ##         leaf2len[self] = {self: 0}
-    ##     store[self] = leaf2len
-    ##     return store
+        n.add_child(self, reindex=reindex)
+        n.add_child(node, reindex=reindex)
+        parent.add_child(n, reindex=reindex)
+        if reindex:
+            self.get_root().set_iternode_cache()
+            self.reindex()
 
     def leaf_distances(self, measure="length"):
         """
-        RR: I don't quite understand the structure of the output. Also,
-            I can't figure out what "measure" does.-CZ
+        RR: I don't quite understand the structure of the output.
         """
         from collections import defaultdict
         store = defaultdict(lambda:defaultdict(lambda:0))
@@ -1079,45 +1017,6 @@ class Node(object):
 
         return d
 
-    def reroot_orig(self, newroot):
-        assert newroot in self
-        self.isroot = False
-        newroot.isroot = True
-        v = []
-        n = newroot
-        while 1:
-            v.append(n)
-            if not n.parent: break
-            n = n.parent
-        v.reverse()
-        for i, cp in enumerate(v[:-1]):
-            node = v[i+1]
-            # node is current node; cp is current parent
-            cp.remove_child(node)
-            node.add_child(cp)
-            cp.length = node.length
-        return newroot
-
-    def reroot_org2(self, newroot):
-        """
-        RR: I can't get this to work properly -CZ
-        """
-        newroot = self[newroot]
-        assert newroot in self
-        self.isroot = False
-        n = newroot
-        v = list(n.rootpath())
-        v.reverse()
-        for node in (v+[n])[1:]:
-            # node is current node; cp is current parent
-            cp = node.parent
-            cp.remove_child(node)
-            node.add_child(cp)
-            cp.length = node.length
-            cp.label = node.label
-        newroot.isroot = True
-        return newroot
-
     def reroot(self, newroot, distance = 0.5):
         """
         Reroot the tree between newroot and its parent.
@@ -1138,19 +1037,22 @@ class Node(object):
             Node: Root node of new rerooted tree.
         """
         oldroot = self.copy()
+        for n in oldroot.iternodes():
+            n.meta["cached"]=False
+        newroot = self[newroot]
         oldroot.isroot = False
-        newroot = oldroot[newroot]
+        newroot = oldroot[newroot.id]
         assert newroot in oldroot
         assert newroot not in oldroot.children
-        t = newroot.bisect_branch(distance)
+        newtree = newroot.bisect_branch(distance, reindex=False)
 
-        v = list(t.rootpath())
-        t.parent = None
-        t.children.append(v[0])
+        root_path = list(newtree.rootpath())
+        newtree.parent = None
+        newtree.children.append(root_path[0])
 
-        newparent = t
-        newlen = t.length
-        for node in v:
+        newparent = newtree
+        newlen = newtree.length
+        for node in root_path:
             node.children = [ x for x in node.children if x is not newparent ]
             node.children.append(node.parent)
             node.parent = newparent
@@ -1158,14 +1060,18 @@ class Node(object):
             node.length = newlen
             newlen = oldlen
             newparent = node
-        v[-1].children = [ x for x in v[-1].children if x ]
+        root_path[-1].children = [ x for x in root_path[-1].children if x ]
         try:
-            v[-1].excise()
+            root_path[-1].excise(reindex=False)
         except:
             pass
 
-        t.isroot = True
-        return t
+        newtree.isroot = True
+        newtree.set_iternode_cache()
+        for n in newroot.iternodes():
+            n.meta["cached"]=False
+        newtree.reindex()
+        return newtree
     def makeroot(self, shift_labels=False):
         """
         shift_labels: flag to shift internal parent-child node labels
@@ -1192,50 +1098,27 @@ class Node(object):
             s = write_newick(self, outfile, length_fmt, True, clobber)
             if not outfile:
                 return s
-    # def update_pi(self, count=0):
-    #     """
-    #     Given root node, traverse tree in postorder sequence and update
-    #     pi property of nodes
-    #     """
-    #     assert self.isroot
-    #     count = 0
-    #     tree.leaves()[0].pi = count
+
     def get_siblings(self):
         """
         Return list of siblings of node
         """
         assert self.parent is not None
         return [c for c in self.parent.children if not c==self]
-           
-
+    def ntaxa(self):
+        """
+        Number of leaves descended from self
+        """
+        return len(self.leaves())
+    def tiplabels(self):
+        """
+        List of labels of leaves descended from self, in preorder sequence
+        """
+        return [n.label for n in self.leaves()]
 
 
 
 reroot = Node.reroot
-
-def index(node, n=0, d=0, ni=0, li=0, ii=0,pi=0):
-    """
-    recursively attach 'next', 'back', (and 'left', 'right'), 'ni',
-    'ii', 'pi', and 'node_depth' attributes to nodes
-    """
-    node.next = node.left = n
-    if not node.parent:
-        node.node_depth = d
-    else:
-        node.node_depth = node.parent.node_depth + 1
-    n += 1
-    # node.ni = ni; ni+=1
-    # node.ii = ii; ii +=1
-    for i, c in enumerate(node.children):
-        if i > 0:
-            n = node.children[i-1].back + 1
-        index(c, n)
-
-    if node.children:
-        node.back = node.right = node.children[-1].back + 1
-    else:
-        node.back = node.right = n
-#    return node.back
 
 def remove_singletons(root, add=True):
     "Remove descendant nodes that are the sole child of their parent"
@@ -1274,7 +1157,7 @@ def clade_sizes(node, results={}):
 
 def write(node, outfile=None, format="newick", length_fmt=":%g",
           clobber=False):
-    if format=="newick" or ((type(outfile) in types.StringTypes) and
+    if format=="newick" or ((type(outfile) in StringTypes) and
                             (outfile.endswith(".newick") or
                              outfile.endswith(".new"))):
         s = write_newick(node, outfile, length_fmt, True, clobber)
@@ -1304,14 +1187,17 @@ def write_newick(node, outfile=None, length_fmt=":%g", end=False,
     s = "%s%s%s" % (node_str, length_str, semicolon)
     if end and outfile:
         flag = False
-        if type(outfile) in types.StringTypes:
+        if type(outfile) in StringTypes:
             if not clobber:
                 assert not os.path.isfile(outfile), "File '%s' exists! (Set clobber=True to overwrite)" % outfile
             flag = True
-            outfile = file(outfile, "w")
+            outfile = open(outfile, "w")
         outfile.write(s)
-        if flag:
+        try:
             outfile.close()
+        except:
+            pass
+
     return s
 
 def read(data, format=None, treename=None, ttable=None):
@@ -1327,8 +1213,8 @@ def read(data, format=None, treename=None, ttable=None):
     Returns:
         Node: The root node.
     """
-    import newick
-    StringTypes = types.StringTypes
+    from . import newick
+
 
     def strip(s):
         fname = os.path.split(s)[-1]
@@ -1354,31 +1240,33 @@ def read(data, format=None, treename=None, ttable=None):
         if type(data) in StringTypes:
             if os.path.isfile(data):
                 treename = strip(data)
-                return newick.parse(file(data), treename=treename,
-                                    ttable=ttable)
+                with open(data, "r") as f:
+                    parsed = newick.parse(f, treename=treename,
+                                        ttable=ttable)
+                out = parsed
             else:
-                return newick.parse(data, ttable=ttable)
+                out = newick.parse(data, ttable=ttable)
 
         elif (hasattr(data, "tell") and hasattr(data, "read")):
             treename = strip(getattr(data, "name", None))
-            return newick.parse(data, treename=treename, ttable=ttable)
+            out = newick.parse(data, treename=treename, ttable=ttable)
     elif format == "nexus-dendropy":
         import dendropy
         if type(data) in StringTypes:
             if os.path.isfile(data):
                 treename = strip(data)
-                return newick.parse(
+                out = newick.parse(
                     str(dendropy.Tree.get_from_path(data, "nexus")),
                     treename=treename
                     )
             else:
-                return newick.parse(
+                out = newick.parse(
                     str(dendropy.Tree.get_from_string(data, "nexus"))
                     )
 
         elif (hasattr(data, "tell") and hasattr(data, "read")):
             treename = strip(getattr(data, "name", None))
-            return newick.parse(
+            out = newick.parse(
                 str(dendropy.Tree.get_from_stream(data, "nexus")),
                 treename=treename
                 )
@@ -1389,23 +1277,32 @@ def read(data, format=None, treename=None, ttable=None):
         if type(data) in StringTypes:
             if os.path.isfile(data):
                 with open(data) as infile:
-                    rec = newick.nexus_iter(infile).next()
-                    if rec: return rec.parse()
+                    rec = next(newick.nexus_iter(infile))
+                    if rec:
+                        out = rec.parse()
             else:
-                rec = newick.nexus_iter(StringIO(data)).next()
-                if rec: return rec.parse()
+                rec = next(newick.nexus_iter(StringIO(data)))
+                if rec:
+                    out = rec.parse()
         else:
-            rec = newick.nexus_iter(data).next()
-            if rec: return rec.parse()
+            rec = next(newick.nexus_iter(data))
+            if rec:
+                out = rec.parse()
     else:
         # implement other tree formats here (nexus, nexml etc.)
-        raise IOError, "format '%s' not implemented yet" % format
+        raise IOError("format '%s' not implemented yet" % format)
+    try:
+        out.set_iternode_cache()
+    except UnboundLocalError:
+        raise IOError("unable to read tree from '%s'" % data)
 
-    raise IOError, "unable to read tree from '%s'" % data
+    for n in out:
+        n.meta["cached"] = True
+    return out
 
 def readmany(data, format="newick"):
     """Iterate over trees from a source."""
-    if type(data) in types.StringTypes:
+    if type(data) in StringTypes:
         if os.path.isfile(data):
             data = open(data)
         else:
@@ -1418,7 +1315,7 @@ def readmany(data, format="newick"):
         for rec in newick.nexus_iter(data):
             yield rec.parse()
     else:
-        raise Exception, "format '%s' not recognized" % format
+        raise Exception("format '%s' not recognized" % format)
     data.close()
 
 ## def randomly_resolve(n):

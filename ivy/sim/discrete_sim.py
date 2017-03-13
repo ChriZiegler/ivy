@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import ivy
 from ivy.chars import mk
 import numpy as np
@@ -7,7 +9,7 @@ import scipy.stats
 from scipy.stats import rv_discrete
 import random
 
-def sim_discrete(tree, Q, anc=None, charname=None):
+def sim_discrete(tree, Q, anc=None, charname=None, rseed=None):
     """
     Simulate discrete character on a tree given transition rate matrix.
 
@@ -16,6 +18,7 @@ def sim_discrete(tree, Q, anc=None, charname=None):
         Q (np.array): Instantaneous rate matrix
         anc (int): Root state. Optional. If None, root state is chosen
           from stationary distrubution of Q matrix
+        rseed (int): Random seed to be passed to np.random. Optional
     Returns:
         Node: Copy of tree with each node containing its simulated
           state and the character history of its subtending branch.
@@ -30,13 +33,15 @@ def sim_discrete(tree, Q, anc=None, charname=None):
     ####################################
     if anc is None:
         # Randomly pick ancestral state from stationary distribution
-        anc = rv_discrete(values=(range(nchar),mk.qsd(Q))).rvs()
+        anc = rv_discrete(values=(list(range(nchar)),mk.qsd(Q))).rvs()
     simtree.sim_char = {}
     simtree.sim_char["sim_state"] = anc
     simtree.sim_char["sim_hist"] = []
     ###############################################################
     # Go through the tree in preorder sequence and simulate history
     ###############################################################
+    if rseed:
+        np.random.seed(rseed)
     for node in simtree.descendants():
         prevstate = node.parent.sim_char["sim_state"]
         node.sim_char = {}
@@ -46,12 +51,13 @@ def sim_discrete(tree, Q, anc=None, charname=None):
             pass
         else:
             dt = 0
-            while True:
+            while 1:
                 dt += np.random.exponential(1.0/-Q[prevstate,prevstate])
                 if dt > node.length:
                     break
-                newstate = rv_discrete(values=(range(nchar)[:prevstate] + range(nchar)[prevstate+1:],
-                                        np.concatenate((Q[prevstate][:prevstate],Q[prevstate][prevstate+1:])))).rvs()
+                vals  = np.concatenate((Q[prevstate][:prevstate],Q[prevstate][prevstate+1:]))
+                newstate = rv_discrete(values=(list(range(nchar))[:prevstate] + list(range(nchar))[prevstate+1:],
+                                    vals/sum(vals))).rvs()
                 node.sim_char["sim_hist"].append((newstate,dt))
                 node.sim_char["sim_state"] = newstate
                 prevstate = newstate

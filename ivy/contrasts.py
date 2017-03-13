@@ -3,7 +3,9 @@ Calculate independent contrasts
 
 TODO: include utilities for transforming data, etc.
 """
-def PIC(node, data, results={}):
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+def PIC(node, data, results=None):
     """
     Phylogenetic independent contrasts.
 
@@ -21,6 +23,9 @@ def PIC(node, data, results={}):
 
     TODO: modify to accommodate polytomies.
     """
+    #TODO: add option to scale by variance
+    if results is None:
+        results = {}
     X = []; v = []
     for child in node.children:
         if child.children:
@@ -46,7 +51,7 @@ def PIC(node, data, results={}):
     return results
 
 if __name__ == "__main__":
-    import tree
+    from . import tree
     n = tree.read(
         "((((Homo:0.21,Pongo:0.21)N1:0.28,Macaca:0.49)N2:0.13,"\
         "Ateles:0.62)N3:0.38,Galago:1.00)N4:0.0;"
@@ -59,5 +64,5 @@ if __name__ == "__main__":
         "Galago": -1.46968
         }
 
-    for k, v in PIC(n, char1).items():
-        print k.label or k.id, v
+    for k, v in list(PIC(n, char1).items()):
+        print(k.label or k.id, v)
